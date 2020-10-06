@@ -1,4 +1,6 @@
+import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:alarm_clock/screen/mainmenu.dart';
+import 'package:alarm_clock/screen/setting.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +15,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainMenu(),
+      initialRoute: '/',
+      routes: {
+        '/':(context)=>MainMenu(),
+        '/alarmsetting':(context)=>AlarmSetting(),
+        '/setting':(context)=>Setting(),
+        
+      },
     );
   }
 }

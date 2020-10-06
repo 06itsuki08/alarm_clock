@@ -1,3 +1,4 @@
+import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
@@ -27,15 +28,14 @@ class _MainMenuState extends State<MainMenu>{
             //onPressed そのまんま押された時の動作を宣言するとこ
             //setState 値を変更して画面を更新するよみたいな感じ
             //画面の更新をかけないと表示上の数値は変わらない
-            onPressed:()=>setState((){
-              text='アラーム追加画面へ遷移する';
-            }),//
+            onPressed:(){
+              Navigator.pushNamed(context, '/alarmsetting');},//
           ),
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: ()=>setState((){
-              text='設定画面に遷移する';
-          }),)
+            onPressed: (){
+              Navigator.pushNamed(context,'/setting');
+            },)
         ],
       ),
       //body アプリのメイン画面
