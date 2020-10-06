@@ -1,3 +1,4 @@
+import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -6,57 +7,77 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'カメラde目覚まし📷',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      home: MainPage(),
+      routes: <String, WidgetBuilder> {
+        '/home': (BuildContext context) => new MainPage(),
+        '/addalarm': (BuildContext context) => new Addalarm(),
+        '/settings' : (BuildContext context) => new Settings()
+
+      },
+    );
+  }
+}
+class MainPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title:Text(title),
+        actions: <Widget>[
+          IconButton(
+            icon:Icon(Icons.alarm_add),
+              onPressed: () => Navigator.of(context).pushNamed("/addalarm"),
+
+          ),
+
+          IconButton(
+            icon:Icon(Icons.settings),
+            onPressed: () => Navigator.of(context).pushNamed("/settings"),
+          )
+        ]
       ),
-      home: MyHomePage(title: 'カメラde目覚まし📷'),
+    );
+  }
+}
+class Addalarm extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Navigator'),
+      ),
+      body: new Container(
+        padding: new EdgeInsets.all(32.0),
+        child: new Center(
+          child: new Column(
+            children: <Widget>[
+              Text('アラーム追加'),
+              RaisedButton(onPressed: () => Navigator.of(context).pop(), child: new Text('戻る'),)
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class Settings extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Navigator'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+      body: new Container(
+        padding: new EdgeInsets.all(32.0),
+        child: new Center(
+          child: new Column(
+            children: <Widget>[
+              Text('設定画面'),
+              RaisedButton(onPressed: () => Navigator.of(context).pop(), child: new Text('戻る'),)
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }
