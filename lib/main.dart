@@ -17,12 +17,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/':(context)=>MainMenu(),
-        '/alarmsetting':(context)=>AlarmSetting(),
-        '/setting':(context)=>Setting(),
-        
+        '/': (context) => MainMenu(),
+        '/alarmsetting': (context) => AlarmSetting(),
+        '/setting': (context) => Setting(),
       },
     );
   }
 }
-
