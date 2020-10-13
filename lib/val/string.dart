@@ -7,6 +7,7 @@ final String title = "カメラde目覚まし📷";
 final String alarmSetting = "アラーム設定";
 final String setting = "設定";
 final TextStyle itemName = TextStyle(fontWeight: FontWeight.w600, fontSize: 20);
+Size size;
 
 SizedBox widthSpacer({double width = 5.0}) {
   return SizedBox(width: width);

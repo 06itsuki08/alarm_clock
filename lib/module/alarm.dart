@@ -1,27 +1,31 @@
-class Alarm{
- int id;
- DateTime time;
- String description;
- String soundPath;
- List<int> repeat;
- bool vibration;
+import 'package:flutter/material.dart';
 
- Alarm(
-   this.time,
-   this.description,
-   this.soundPath,
-   this.repeat,
-   this.vibration
- );
+class Alarm {
+  int id;
+  TimeOfDay time;
+  String description = '未登録';
+  //String soundPath; Path取得未実装
+  List<int> repeat;
+  bool vibration;
+  bool qrCodeMode;
 
- setAlarm(DateTime time,String description,String soundPath,List<int> repeat,bool vibration){
-   new Alarm(
-     time,
-     description,
-     soundPath,
-     repeat,
-     vibration
-   );
- }
+  Alarm(
+      {this.id,
+      this.time,
+      this.description,
+      this.repeat,
+      this.vibration,
+      this.qrCodeMode});
 
- }
+  /*
+  setAlarm(TimeOfDay time, String description, List<int> repeat, bool vibration,
+      bool qrCodeMode) {
+    Alarm(
+        time: time,
+        description: description,
+        repeat: repeat,
+        vibration: vibration,
+        qrCodeMode: qrCodeMode);
+  }
+  */
+}

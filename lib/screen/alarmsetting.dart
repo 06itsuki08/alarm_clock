@@ -1,10 +1,15 @@
+import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:alarm_clock/module/alarm.dart';
 
+// ignore: must_be_immutable
 class AlarmSetting extends StatefulWidget {
   AlarmSetting({Key key}) : super(key: key);
+
   @override
   _AlarmSettingState createState() => _AlarmSettingState();
 }
@@ -14,24 +19,29 @@ class _AlarmSettingState extends State<AlarmSetting> {
   String yotei = 'アラーム設定項目';
   TimeOfDay setTime;
   bool vibration;
-  String filePath;
+  bool qrCodeMode;
   TextEditingController textCtrl;
-  Size size;
-  List<String> checkRepeat = ['日', '月', '火', '水', '木', '金', '土'];
-  List<bool> isSelected = [false, false, false, false, false, false, false];
+  List<bool> isSelected;
+  Alarm alarm;
 
   @override
   void initState() {
     super.initState();
+    isSelected = [false, false, false, false, false, false, false];
     setTime = TimeOfDay.now();
-    filePath = '';
     vibration = false;
+    qrCodeMode = true;
     textCtrl = new TextEditingController();
   }
 
   @override
+  void dispose() {
+    textCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
     return Scaffold(
       //AppBarはアプリのタイトルとかを表示してくれる領域のこと
       appBar: AppBar(
@@ -94,7 +104,7 @@ class _AlarmSettingState extends State<AlarmSetting> {
                             ),
                           ),
                         ]),
-                    heightSpacer(),
+                    heightSpacer(height: size.height * 0.025),
                   ],
                 ),
               ),
@@ -118,11 +128,12 @@ class _AlarmSettingState extends State<AlarmSetting> {
               decoration: borderLine,
               child: Column(
                 children: <Widget>[
+                  heightSpacer(height: size.height * 0.025),
                   SizedBox(
-                    height: size.height / 10,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
+                        heightSpacer(height: size.height * 0.025),
                         widthSpacer(width: size.width / 10),
                         Text(
                           "くり返し",
@@ -131,16 +142,17 @@ class _AlarmSettingState extends State<AlarmSetting> {
                       ],
                     ),
                   ),
+                  heightSpacer(height: size.height * 0.025),
                   SizedBox(
                     child: ToggleButtons(
                       children: <Widget>[
-                        Icon(Icons.vibration),
-                        Icon(Icons.android),
-                        Icon(Icons.apps),
-                        Icon(Icons.archive),
-                        Icon(Icons.error),
-                        Icon(Icons.mail),
-                        Icon(Icons.save)
+                        Text('日'),
+                        Text('月'),
+                        Text('火'),
+                        Text('水'),
+                        Text('木'),
+                        Text('金'),
+                        Text('土')
                       ],
                       onPressed: (int index) {
                         setState(() {
@@ -148,10 +160,12 @@ class _AlarmSettingState extends State<AlarmSetting> {
                         });
                       },
                       isSelected: isSelected,
+                      textStyle:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ),
                   widthSpacer(width: size.width / 10),
-                  heightSpacer(),
+                  heightSpacer(height: size.height * 0.025),
                 ],
               ),
             ),
@@ -160,7 +174,6 @@ class _AlarmSettingState extends State<AlarmSetting> {
             Container(
               decoration: borderLine,
               child: SizedBox(
-                height: size.height / 10,
                 child: SwitchListTile(
                   value: vibration,
                   title: Text(
@@ -172,6 +185,62 @@ class _AlarmSettingState extends State<AlarmSetting> {
                       vibration = value;
                     });
                   },
+                ),
+              ),
+            ),
+
+            //QRコードモード
+            Container(
+              decoration: borderLine,
+              child: SizedBox(
+                child: SwitchListTile(
+                  value: qrCodeMode,
+                  title: Text(
+                    'QRコードモード',
+                    style: itemName,
+                  ),
+                  onChanged: (bool value) {
+                    setState(() {
+                      qrCodeMode = value;
+                    });
+                  },
+                ),
+              ),
+            ),
+
+            //ボタン
+            Container(
+              decoration: borderLine,
+              child: SizedBox(
+                child: Column(
+                  children: <Widget>[
+                    heightSpacer(height: size.height * 0.025),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        RaisedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Cancel',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w700)),
+                        ),
+                        widthSpacer(width: size.width * 0.25),
+                        RaisedButton(
+                          onPressed: () {
+                            createAlarmButton();
+                          },
+                          child: Text(
+                            'OK',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ],
+                    ),
+                    heightSpacer(height: size.height * 0.025),
+                  ],
                 ),
               ),
             ),
@@ -192,15 +261,34 @@ class _AlarmSettingState extends State<AlarmSetting> {
     }
   }
 
-  Future<void> selectFile() async {
+/* ファイルパス取得
+ Future<void> selectFile() async {
     FilePickerResult result = await FilePicker.platform.pickFiles();
     //todo 例外のcatch処理
     if (result != null) {
       filePath = result.files.single.path;
     }
   }
+*/
 
-  void createAlarm() {
+  void createAlarmButton() {
     //Alarmの設定
+    List<int> list = [];
+    for (int i = 0; i < isSelected.length; i++) {
+      if (isSelected[i] == true) {
+        list.add(i);
+      }
+    }
+    setState(() {
+      alarm = new Alarm(
+          time: setTime,
+          description: textCtrl.text.toString(),
+          repeat: list,
+          vibration: vibration,
+          qrCodeMode: qrCodeMode);
+      addAlarm(alarm);
+      saveData(alarmList);
+    });
+    Navigator.of(context).pop();
   }
 }

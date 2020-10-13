@@ -11,6 +11,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: title,
+      //右上のデバッグモードって帯を消す
+      debugShowCheckedModeBanner: false,
       //テーマ　アプリの基本色を決めたりする
       theme: ThemeData(
         primarySwatch: Colors.blue,
