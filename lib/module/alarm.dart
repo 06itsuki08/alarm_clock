@@ -17,6 +17,25 @@ class Alarm {
       this.vibration,
       this.qrCodeMode});
 
+  Map toJson() => {
+        'id': id,
+        'time': '${time.hour.toString()}:${time.minute.toString()}',
+        'description': description,
+        'repeat': repeat,
+        'vibration': vibration,
+        'qrCodeMode': qrCodeMode
+      };
+
+  Alarm.fromJson(Map json)
+      : id = json['id'],
+        time = TimeOfDay(
+            hour: int.parse(json['time'].split(":")[0]),
+            minute: int.parse(json['time'].split(":")[1])),
+        description = json['description'],
+        repeat = json['repeat'].cast<int>(),
+        vibration = json['vibration'],
+        qrCodeMode = json['qrCodeMode'];
+
   /*
   setAlarm(TimeOfDay time, String description, List<int> repeat, bool vibration,
       bool qrCodeMode) {

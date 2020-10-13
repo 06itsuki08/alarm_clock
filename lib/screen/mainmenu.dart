@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
 class MainMenu extends StatefulWidget {
@@ -17,16 +18,11 @@ class _MainMenuState extends State<MainMenu> {
   //画面描画の前、最初に動作するとこ初期化とかここでおこなったりする
   @override
   void initState() {
-    super.initState();
     setState(() {
-      alarmList = List<Alarm>();
-      loadData(alarmList);
+      if (alarmList != null) alarmList.clear();
+      loadData();
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    super.initState();
   }
 
   @override
@@ -46,7 +42,10 @@ class _MainMenuState extends State<MainMenu> {
             //setState 値を変更して画面を更新するよみたいな感じ
             //画面の更新をかけないと表示上の数値は変わらない
             onPressed: () async {
-              Navigator.pushNamed(context, '/alarmsetting');
+              Navigator.push(
+                context,
+                new MaterialPageRoute(builder: (context) => new AlarmSetting()),
+              ).then(onGoBack);
             }, //
           ),
           IconButton(
@@ -59,27 +58,34 @@ class _MainMenuState extends State<MainMenu> {
       ),
       //body アプリのメイン画面
       //Column 子供になるパーツが全部縦に並んでくれる　子供はchildren にいれる
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Text('アラーム登録数：${alarmList.length}'),
-          ListView.builder(
-              shrinkWrap: true,
-              itemCount: alarmList.length,
-              scrollDirection: Axis.vertical,
-              itemBuilder: (BuildContext context, int i) {
-                if (alarmList.length <= 0) {
-                  return Card(
-                    child: Text('アラーム未登録'),
-                  );
-                } else {
-                  return buildListItem(alarmList[i]);
-                }
-              })
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            heightSpacer(height: size.height * 0.01),
+            Text('アラーム登録数：${alarmList.length}'),
+            alarmList.length > 0
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    reverse: true,
+                    physics: ScrollPhysics(),
+                    itemCount: alarmList.length,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (BuildContext context, int i) {
+                      return buildListItem(alarmList[i]);
+                    })
+                : Center(child: Card(child: Text('アラーム未登録')))
+          ],
+        ),
       ),
     );
+  }
+
+  FutureOr onGoBack(dynamic value) {
+    setState(() {
+      loadData();
+    });
   }
 
   void removeAlarm(Alarm alarm) async {

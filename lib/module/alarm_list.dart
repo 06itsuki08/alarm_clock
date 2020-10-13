@@ -1,4 +1,5 @@
 import 'package:alarm_clock/module/alarm.dart';
+import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,14 @@ void updateAlarm(Alarm alarm, int i) {
   alarmList[i] = alarm;
 }
 
+void relodeAlarmList() {
+  alarmList.clear();
+  loadData();
+}
+
 Card buildListItem(Alarm alarm) {
   return Card(
+    margin: const EdgeInsets.all(10.0),
     child: Column(
       children: <Widget>[
         Row(
@@ -56,7 +63,7 @@ Icon buildSnoozeIcon(bool check) {
 
 checkRepeat(List<int> list) {
   if (list.length < 1 || list.length == null) {
-    return 0;
+    return Text(' ');
   } else {
     return buildRepeatIcon(list);
   }

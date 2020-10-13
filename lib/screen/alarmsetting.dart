@@ -1,6 +1,5 @@
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
-import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
@@ -281,6 +280,7 @@ class _AlarmSettingState extends State<AlarmSetting> {
     }
     setState(() {
       alarm = new Alarm(
+          id: alarmList.length,
           time: setTime,
           description: textCtrl.text.toString(),
           repeat: list,
@@ -289,6 +289,6 @@ class _AlarmSettingState extends State<AlarmSetting> {
       addAlarm(alarm);
       saveData(alarmList);
     });
-    Navigator.of(context).pop();
+    Navigator.of(context).pop('savefin');
   }
 }
