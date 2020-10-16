@@ -42,75 +42,77 @@ class _AlarmSettingState extends State<AlarmSetting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //AppBarはアプリのタイトルとかを表示してくれる領域のこと
-      appBar: AppBar(
-        title: Text(alarmSetting),
-      ),
       //body アプリのメイン画面
       //Column 子供になるパーツが全部縦に並んでくれる　子供はchildren にいれる
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            //時間取得
-            Container(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height / 4,
-                child: Column(children: <Widget>[
-                  SizedBox(height: 10),
-                  Text(
-                    '${setTime.hour.toString().padLeft(2, '0')}:${setTime.minute.toString().padLeft(2, '0')}',
-                    style: TextStyle(fontSize: 80),
-                  ),
-                  SizedBox(height: 5),
-                  RaisedButton(
-                      onPressed: () => selectTime(context),
-                      child: new Text(
-                        '時間選択',
-                        style: TextStyle(fontSize: 30),
-                      )),
-                ]),
-              ),
-            ),
-            heightSpacer(height: 20),
-            //説明
-            Container(
-              decoration: borderLine,
-              child: SizedBox(
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                          width: size.width * 0.8,
-                          child: Text(
-                            '説明',
-                            style: itemName,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            width: size.width * 0.8,
-                            child: TextField(
-                              enabled: true,
-                              controller: textCtrl,
-                            ),
-                          ),
-                        ]),
-                    heightSpacer(height: size.height * 0.025),
-                  ],
-                ),
-              ),
-            ),
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  heightSpacer(height: size.height * 0.05),
 
-            //音 は一時的に未実装
-            /*
+                  //時間取得
+                  Container(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height / 4,
+                      child: Column(children: <Widget>[
+                        SizedBox(height: 10),
+                        Text(
+                          '${setTime.hour.toString().padLeft(2, '0')}:${setTime.minute.toString().padLeft(2, '0')}',
+                          style: TextStyle(fontSize: 80),
+                        ),
+                        SizedBox(height: 5),
+                        RaisedButton(
+                            onPressed: () => selectTime(context),
+                            child: new Text(
+                              '時間選択',
+                              style: TextStyle(fontSize: 30),
+                            )),
+                      ]),
+                    ),
+                  ),
+                  heightSpacer(height: 20),
+                  //説明
+                  Container(
+                    decoration: borderLine,
+                    child: SizedBox(
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                width: size.width * 0.8,
+                                child: Text(
+                                  '説明',
+                                  style: itemName,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  width: size.width * 0.8,
+                                  child: TextField(
+                                    enabled: true,
+                                    controller: textCtrl,
+                                  ),
+                                ),
+                              ]),
+                          heightSpacer(height: size.height * 0.025),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  //音 は一時的に未実装
+                  /*
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -122,94 +124,95 @@ class _AlarmSettingState extends State<AlarmSetting> {
             ),
             */
 
-            //繰り返し
-            Container(
-              decoration: borderLine,
-              child: Column(
-                children: <Widget>[
-                  heightSpacer(height: size.height * 0.025),
-                  SizedBox(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                  //繰り返し
+                  Container(
+                    decoration: borderLine,
+                    child: Column(
                       children: <Widget>[
                         heightSpacer(height: size.height * 0.025),
+                        SizedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              heightSpacer(height: size.height * 0.025),
+                              widthSpacer(width: size.width / 10),
+                              Text(
+                                "くり返し",
+                                style: itemName,
+                              ),
+                            ],
+                          ),
+                        ),
+                        heightSpacer(height: size.height * 0.025),
+                        SizedBox(
+                          child: ToggleButtons(
+                            children: <Widget>[
+                              Text('日'),
+                              Text('月'),
+                              Text('火'),
+                              Text('水'),
+                              Text('木'),
+                              Text('金'),
+                              Text('土')
+                            ],
+                            onPressed: (int index) {
+                              setState(() {
+                                isSelected[index] = !isSelected[index];
+                              });
+                            },
+                            isSelected: isSelected,
+                            textStyle: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                          ),
+                        ),
                         widthSpacer(width: size.width / 10),
-                        Text(
-                          "くり返し",
+                        heightSpacer(height: size.height * 0.025),
+                      ],
+                    ),
+                  ),
+
+                  //バイブ
+                  Container(
+                    decoration: borderLine,
+                    child: SizedBox(
+                      child: SwitchListTile(
+                        value: vibration,
+                        title: Text(
+                          'バイブレーション',
                           style: itemName,
                         ),
-                      ],
+                        onChanged: (bool value) {
+                          setState(() {
+                            vibration = value;
+                          });
+                        },
+                      ),
                     ),
                   ),
-                  heightSpacer(height: size.height * 0.025),
-                  SizedBox(
-                    child: ToggleButtons(
-                      children: <Widget>[
-                        Text('日'),
-                        Text('月'),
-                        Text('火'),
-                        Text('水'),
-                        Text('木'),
-                        Text('金'),
-                        Text('土')
-                      ],
-                      onPressed: (int index) {
-                        setState(() {
-                          isSelected[index] = !isSelected[index];
-                        });
-                      },
-                      isSelected: isSelected,
-                      textStyle:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+
+                  //QRコードモード
+                  Container(
+                    decoration: borderLine,
+                    child: SizedBox(
+                      child: SwitchListTile(
+                        value: qrCodeMode,
+                        title: Text(
+                          'QRコードモード',
+                          style: itemName,
+                        ),
+                        onChanged: (bool value) {
+                          setState(() {
+                            qrCodeMode = value;
+                          });
+                        },
+                      ),
                     ),
                   ),
-                  widthSpacer(width: size.width / 10),
-                  heightSpacer(height: size.height * 0.025),
-                ],
-              ),
-            ),
-
-            //バイブ
-            Container(
-              decoration: borderLine,
-              child: SizedBox(
-                child: SwitchListTile(
-                  value: vibration,
-                  title: Text(
-                    'バイブレーション',
-                    style: itemName,
-                  ),
-                  onChanged: (bool value) {
-                    setState(() {
-                      vibration = value;
-                    });
-                  },
-                ),
-              ),
-            ),
-
-            //QRコードモード
-            Container(
-              decoration: borderLine,
-              child: SizedBox(
-                child: SwitchListTile(
-                  value: qrCodeMode,
-                  title: Text(
-                    'QRコードモード',
-                    style: itemName,
-                  ),
-                  onChanged: (bool value) {
-                    setState(() {
-                      qrCodeMode = value;
-                    });
-                  },
-                ),
-              ),
-            ),
+                ]),
 
             //ボタン
             Container(
-              decoration: borderLine,
+              //decoration: borderLine,
               child: SizedBox(
                 child: Column(
                   children: <Widget>[

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/test.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
@@ -63,19 +64,34 @@ class _MainMenuState extends State<MainMenu> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            //
+            Text('テーマカラー：amber', style: TextStyle(fontSize: 20)),
+            colortest(Colors.amber, 'amber'),
+            colortest(Colors.yellow, 'yellow'),
+            colortest(Colors.orange, 'orange'),
+            Text('MaterialColor で検索'),
+            //
             heightSpacer(height: size.height * 0.01),
             Text('アラーム登録数：${alarmList.length}'),
-            alarmList.length > 0
-                ? ListView.builder(
-                    shrinkWrap: true,
-                    reverse: true,
-                    physics: ScrollPhysics(),
-                    itemCount: alarmList.length,
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (BuildContext context, int i) {
-                      return buildListItem(alarmList[i]);
-                    })
-                : Center(child: Card(child: Text('アラーム未登録')))
+            FutureBuilder(
+                future: loadData(needReturn: true),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    return alarmList.length > 0
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            reverse: true,
+                            physics: ScrollPhysics(),
+                            itemCount: alarmList.length,
+                            scrollDirection: Axis.vertical,
+                            itemBuilder: (BuildContext context, int i) {
+                              return buildListItem(alarmList[i]);
+                            })
+                        : Center(child: Card(child: Text('アラーム未登録')));
+                  } else {
+                    return Text("非同期失敗");
+                  }
+                }),
           ],
         ),
       ),

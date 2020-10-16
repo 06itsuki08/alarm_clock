@@ -11,7 +11,7 @@ saveData(List<Alarm> list) async {
   await pref.setStringList('alarms', alarms);
 }
 
-loadData() async {
+loadData({bool needReturn = false}) async {
   alarmList = List<Alarm>();
   //await pref.get型("key");
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -21,5 +21,8 @@ loadData() async {
     alarmList = result.map((f) => Alarm.fromJson(json.decode(f))).toList();
   } else {
     alarmList.clear();
+  }
+  if (needReturn == true) {
+    return alarmList;
   }
 }
