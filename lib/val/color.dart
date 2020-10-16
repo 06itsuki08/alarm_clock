@@ -4,3 +4,9 @@
 // -> https://api.flutter.dev/flutter/material/Colors-class.html
 //final Color.fromRGBO(255,255,255,0);
 // -> RGBと透明度で指定するタイプ
+
+import 'package:flutter/material.dart';
+
+final ThemeData appTheme = ThemeData(
+  primarySwatch: Colors.amber,
+);
