@@ -1,3 +1,4 @@
+
 //アプリ内でよく使用する文字はここに宣言する
 //final 型 名前="";
 
@@ -34,3 +35,4 @@ CircleBorder circleButton = CircleBorder(
   width: 1.0,
   style: BorderStyle.solid,
 ));*/
+
