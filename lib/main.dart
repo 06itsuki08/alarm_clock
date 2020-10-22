@@ -1,4 +1,3 @@
-
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:alarm_clock/screen/setting.dart';
@@ -13,9 +12,8 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
     return MaterialApp(
-
       title: title,
       //右上のデバッグモードって帯を消す
       debugShowCheckedModeBanner: false,
@@ -26,7 +24,6 @@ class MyApp extends StatelessWidget {
         '/': (context) => MainMenu(),
         '/alarmsetting': (context) => AlarmSetting(),
         '/setting': (context) => Setting(),
-
       },
     );
   }
