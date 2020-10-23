@@ -105,9 +105,7 @@ class _MainMenuState extends State<MainMenu> {
                                     return GestureDetector(
                                         child: buildListItem(alarmList[i]),
                                         onLongPress: () {
-                                          setState(() {
-                                            deleteAlarmMode(alarmList[i]);
-                                          });
+                                          deleteAlarmMode(alarmList[i]);
                                         });
                                   })
                             ],
@@ -150,6 +148,7 @@ class _MainMenuState extends State<MainMenu> {
                   onPressed: () {
                     deleteAlarm(alarm);
                     Navigator.of(context).pop();
+                    setState(() {});
                   },
                 ),
               ],
@@ -168,6 +167,7 @@ class _MainMenuState extends State<MainMenu> {
                   onPressed: () {
                     deleteAlarm(alarm);
                     Navigator.of(context).pop();
+                    setState(() {});
                   },
                 ),
               ],
