@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/val/string.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 List<Alarm> alarmList;
@@ -11,6 +14,7 @@ void addAlarm(Alarm alarm) {
 
 void updateAlarm(Alarm alarm, int i) {
   alarmList[i] = alarm;
+  saveData(alarmList);
 }
 
 void relodeAlarmList() {
@@ -18,7 +22,15 @@ void relodeAlarmList() {
   loadData();
 }
 
-Card buildListItem(Alarm alarm) {
+void deleteAlarm(Alarm alarm) {
+  alarmList.remove(alarm);
+  deleteData();
+  saveData(alarmList);
+}
+
+buildListItem(
+  Alarm alarm,
+) {
   return Card(
     margin: const EdgeInsets.all(10.0),
     child: Column(
@@ -45,9 +57,9 @@ Card buildListItem(Alarm alarm) {
   );
 }
 
-Icon buildCameraIcon(bool check) {
+buildCameraIcon(bool check) {
   if (check == false) {
-    return Icon(Icons.cancel);
+    return Icon(Icons.block);
   } else {
     return Icon(Icons.camera_alt);
   }

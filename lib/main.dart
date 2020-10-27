@@ -39,8 +39,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
-
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
     return MaterialApp(
       title: title,
       //右上のデバッグモードって帯を消す

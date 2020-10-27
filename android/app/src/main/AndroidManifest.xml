@@ -9,7 +9,7 @@
         <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="alarm_clock"
+        android:label="カメラde目覚まし📷"
         android:icon="@mipmap/ic_launcher">
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>
