@@ -8,5 +8,7 @@
 import 'package:flutter/material.dart';
 
 final ThemeData appTheme = ThemeData(
-  primarySwatch: Colors.amber,
+  primaryColor: Colors.amber[800],
+  accentColor: Colors.amber[700],
+  brightness: Brightness.light,
 );
