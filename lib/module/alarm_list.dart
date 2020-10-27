@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/val/string.dart';

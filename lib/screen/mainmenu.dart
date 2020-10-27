@@ -3,14 +3,11 @@ import 'dart:io';
 
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
-import 'package:alarm_clock/module/test.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
-
-import '../main.dart';
 
 // ignore: must_be_immutable
 class MainMenu extends StatefulWidget {
