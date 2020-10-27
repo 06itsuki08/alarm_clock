@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 
+import '../main.dart';
+
 // ignore: must_be_immutable
 class MainMenu extends StatefulWidget {
   MainMenu({Key key}) : super(key: key);
@@ -105,7 +107,8 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   void removeAlarm(Alarm alarm) async {
-    setState(() {
+    setState(() async {
+      await flutterLocalNotificationsPlugin.cancel(alarm.id);
       alarmList.remove(alarm);
       saveData(alarmList);
     });

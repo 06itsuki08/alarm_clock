@@ -35,16 +35,4 @@ class Alarm {
         repeat = json['repeat'].cast<int>(),
         vibration = json['vibration'],
         qrCodeMode = json['qrCodeMode'];
-
-  /*
-  setAlarm(TimeOfDay time, String description, List<int> repeat, bool vibration,
-      bool qrCodeMode) {
-    Alarm(
-        time: time,
-        description: description,
-        repeat: repeat,
-        vibration: vibration,
-        qrCodeMode: qrCodeMode);
-  }
-  */
 }
