@@ -26,6 +26,7 @@ dependencies:
   shared_preferences: ^0.5.12+2
   flutter_local_notifications: ^3.0.1
   vibration: ^1.7.1
+  vibration_web: ^1.6.2
   flutter_ringtone_player: ^2.0.0
 
   # The following adds the Cupertino Icons font to your application.

@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:vibration/vibration.dart';
 
 setVibrationPattern() {
   Int64List vibrationPattern = Int64List(2);
@@ -174,3 +175,5 @@ Future selectNotification(String payload) async {
     MaterialPageRoute<void>(builder: (context) => AlarmStop(alarmList[i])),
   );
 }
+
+ringringAlarm() {}
