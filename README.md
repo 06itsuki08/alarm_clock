@@ -1,16 +1,32 @@
 # alarm_clock
 
-A new Flutter application.
+2020 年度の卒業研究のアプリです。
+元々は 2018 年度の研究の改良版
 
-## Getting Started
+作成：チーム卒研猫の会
 
-This project is a starting point for a Flutter application.
+## Used Plugin
 
-A few resources to get you started if this is your first Flutter project:
+- flutter_launcher_icons
+- flutter_local_notifications
+- shared_preferences
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+使用用途を上から、
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- アプリのアイコンを一括で変更する
+- アプリの通知
+- 端末に設定データを読み書きさせる
+
+## Tools
+
+開発に使ったツール
+
+- Flutter
+- VSCode
+- AndroidStudio
+- Github
+- GoogleDrive とその仲間たち
+
+## Promotion
+
+にわねこシリーズはいいぞ

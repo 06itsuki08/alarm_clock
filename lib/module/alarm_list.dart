@@ -1,4 +1,5 @@
 import 'package:alarm_clock/module/alarm.dart';
+import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,13 +23,12 @@ void relodeAlarmList() {
 
 void deleteAlarm(Alarm alarm) {
   alarmList.remove(alarm);
+  canselAlarm(alarm.alarmId);
   deleteData();
   saveData(alarmList);
 }
 
-buildListItem(
-  Alarm alarm,
-) {
+buildListItem(Alarm alarm) {
   return Card(
     margin: const EdgeInsets.all(10.0),
     child: Column(

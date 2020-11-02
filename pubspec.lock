@@ -83,6 +83,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_launcher_icons:
+    dependency: "direct dev"
+    description:
+      name: flutter_launcher_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.0"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -91,14 +98,6 @@ packages:
     source: hosted
     version: "3.0.1"
   flutter_local_notifications_platform_interface:
-  flutter_launcher_icons:
-    dependency: "direct dev"
-    description:
-      name: flutter_launcher_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.8.0"
-  flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
       name: flutter_local_notifications_platform_interface
@@ -212,7 +211,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.12"
+    version: "0.5.12+2"
   shared_preferences_linux:
     dependency: transitive
     description:

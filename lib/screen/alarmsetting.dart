@@ -1,4 +1,5 @@
 import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -281,14 +282,22 @@ class _AlarmSettingState extends State<AlarmSetting> {
         list.add(i);
       }
     }
+    DateTime now = DateTime.now();
+    String nowTime = '${now.hour}${now.minute}${now.microsecond}';
     setState(() {
       alarm = new Alarm(
           id: alarmList.length,
+          alarmId: int.parse(nowTime),
           time: setTime,
           description: textCtrl.text.toString(),
           repeat: list,
           vibration: vibration,
           qrCodeMode: qrCodeMode);
+      if (list.length >= 1) {
+        setAlarmWeeklySchedule(alarm);
+      } else {
+        setAlarmFirstSchedule(alarm);
+      }
       addAlarm(alarm);
       saveData(alarmList);
     });

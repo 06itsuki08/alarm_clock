@@ -1,5 +1,6 @@
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
+import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:alarm_clock/screen/setting.dart';
 import 'package:alarm_clock/val/color.dart';
@@ -14,15 +15,29 @@ import 'package:timezone/timezone.dart' as tz;
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+const MethodChannel platform = MethodChannel('alarm_clock');
+
 Future<void> main() async {
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+
+  WidgetsFlutterBinding.ensureInitialized();
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   final IOSInitializationSettings initializationSettingsIOS =
       IOSInitializationSettings(
-          onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+          onDidReceiveLocalNotification: onDidReceiveLocalNotification,
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+          defaultPresentAlert: true,
+          defaultPresentSound: true);
   final MacOSInitializationSettings initializationSettingsMacOS =
-      MacOSInitializationSettings();
+      MacOSInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+          defaultPresentAlert: true,
+          defaultPresentSound: true);
   final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
@@ -31,7 +46,7 @@ Future<void> main() async {
       onSelectNotification: selectNotification);
 
   tz.initializeTimeZones();
-  tz.setLocalLocation(tz.getLocation('Japan/Tokyo'));
+  tz.setLocalLocation(tz.getLocation('Asia/Tokyo'));
 
   runApp(MyApp());
 }
