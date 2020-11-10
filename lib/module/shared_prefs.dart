@@ -13,18 +13,16 @@ saveData(List<Alarm> list) async {
 }
 
 loadData({bool needReturn = false}) async {
-  alarmList = List<Alarm>();
+  List<Alarm> list = List<Alarm>();
   //await pref.get型("key");
   SharedPreferences pref = await SharedPreferences.getInstance();
   var result = pref.getStringList('alarms');
   if (result != null) {
-    if (alarmList.isNotEmpty) alarmList.clear();
-    alarmList = result.map((f) => Alarm.fromJson(json.decode(f))).toList();
-  } else {
-    alarmList.clear();
+    list = result.map((f) => Alarm.fromJson(json.decode(f))).toList();
   }
+  alarmList = list;
   if (needReturn == true) {
-    return alarmList;
+    return list;
   }
 }
 

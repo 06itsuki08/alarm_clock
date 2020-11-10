@@ -4,6 +4,7 @@ import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
 
 List<Alarm> alarmList;
 
@@ -11,20 +12,61 @@ void addAlarm(Alarm alarm) {
   alarmList.add(alarm);
 }
 
+//まだ実装中
 void updateAlarm(Alarm alarm, int i) {
   alarmList[i] = alarm;
+  //Todo:通知類の再登録を実装
+  deleteData();
   saveData(alarmList);
 }
 
-void relodeAlarmList() {
+void relodeAlarmList() async {
+  //アラームリストを全消し
   alarmList.clear();
-  loadData();
+  //端末に保存してあるアラームリストを読み込み
+  List<Alarm> list = await loadData(needReturn: true);
+  alarmList = list;
+  print('reloadfin alarmList Item num is ${alarmList.length}');
+}
+
+Future<Alarm> getAlarm() async {
+  int i = 0;
+  Alarm alarm;
+  List<Alarm> list = await loadData(needReturn: true);
+  print('load fin List item num is ${alarmList.length}');
+  for (i = 0; i < list.length; i++) {
+    if (alarmedId == list[i].alarmId) {
+      break;
+    }
+  }
+  if (i != list.length) {
+    alarm = list[i];
+    return alarm;
+  } else {
+    List<int> list = [];
+    alarm = new Alarm(
+        id: list.length,
+        alarmId: 0,
+        time: TimeOfDay.now(),
+        description: 'アラーム取得失敗',
+        repeat: list,
+        vibration: true,
+        qrCodeMode: true,
+        stopSnooze: false);
+    return alarm;
+  }
 }
 
 void deleteAlarm(Alarm alarm) {
+  //バックグラウンド処理の予定のキャンセル
+  Workmanager.cancelByUniqueName(alarm.alarmId.toString());
+  //アラームリストからアラームを除外
   alarmList.remove(alarm);
+  //アラームの通知を解除
   canselAlarm(alarm.alarmId);
+  //端末に書き込んだ削除前のアラームリストを一回消去
   deleteData();
+  //アラームを除外されたアラームリストを書き込み
   saveData(alarmList);
 }
 

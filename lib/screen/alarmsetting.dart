@@ -284,19 +284,27 @@ class _AlarmSettingState extends State<AlarmSetting> {
     }
     DateTime now = DateTime.now();
     String nowTime = '${now.hour}${now.minute}${now.microsecond}';
+    String text = "アラーム";
+    if (textCtrl.text != null) {
+      text = textCtrl.text.toString();
+    }
     setState(() {
       alarm = new Alarm(
-          id: alarmList.length,
-          alarmId: int.parse(nowTime),
-          time: setTime,
-          description: textCtrl.text.toString(),
-          repeat: list,
-          vibration: vibration,
-          qrCodeMode: qrCodeMode);
+        id: alarmList.length,
+        alarmId: int.parse(nowTime),
+        time: setTime,
+        description: text,
+        repeat: list,
+        vibration: vibration,
+        qrCodeMode: qrCodeMode,
+        stopSnooze: false,
+      );
       if (list.length >= 1) {
         setAlarmWeeklySchedule(alarm);
+        print('setWeekAlarm');
       } else {
         setAlarmFirstSchedule(alarm);
+        print('setAlarm');
       }
       addAlarm(alarm);
       saveData(alarmList);

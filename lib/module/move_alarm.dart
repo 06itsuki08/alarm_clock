@@ -1,49 +1,52 @@
-import 'dart:typed_data';
-import 'dart:io';
 import 'package:alarm_clock/main.dart';
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:vibration/vibration.dart';
+import 'package:workmanager/workmanager.dart';
 
-setVibrationPattern() {
-  Int64List vibrationPattern = Int64List(2);
-  vibrationPattern[0] = 800;
-  vibrationPattern[1] = 800;
-  return vibrationPattern;
+int alarmedId;
+FlutterRingtonePlayer ringtonePlayer = FlutterRingtonePlayer();
+Vibration vibration = Vibration();
+
+setBackgroundTimer(tz.TZDateTime time) {
+  DateTime now = DateTime.now();
+  Duration setTime = time.difference(now);
+  print('timeset after ${setTime.toString()}');
+  return setTime;
 }
 
 setAlarmFirstSchedule(Alarm alarm) async {
+  Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
+      tag: 'alarm',
+      initialDelay: setBackgroundTimer(_nextInstanceTime(alarm)),
+      inputData: {'int': alarm.alarmId, 'vibration': alarm.vibration});
+
   tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.id,
       '${alarm.description}',
-      '${alarm.time.hour} : ${alarm.time.minute}',
+      '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
       scheduledDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
         'Alarm',
         'Alarm',
-        'Alarm',
-        vibrationPattern: setVibrationPattern(),
+        '卒研猫の会のアラーム',
         ledColor: Colors.amber,
         ledOnMs: 1000,
         ledOffMs: 500,
         priority: Priority.max,
         importance: Importance.max,
-        enableVibration: alarm.vibration,
         channelShowBadge: true,
         visibility: NotificationVisibility.public,
-        onlyAlertOnce: true,
         category: 'alarm',
-        fullScreenIntent: true,
-        playSound: true,
       )),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
@@ -53,36 +56,36 @@ setAlarmFirstSchedule(Alarm alarm) async {
 }
 
 setAlarmWeeklySchedule(Alarm alarm) async {
+  Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
+      tag: 'alarm',
+      initialDelay: setBackgroundTimer(_nextInstanceWeek(alarm)),
+      inputData: {'int': alarm.alarmId, 'vibration': alarm.vibration});
   await flutterLocalNotificationsPlugin.zonedSchedule(
-      alarm.id,
-      'Weekly Alarm ${alarm.alarmId.toString()}',
-      '${alarm.description}',
-      _nextInstanceWeek(alarm),
-      NotificationDetails(
-          android: AndroidNotificationDetails(
-        'Alarm',
-        'Alarm',
-        'alarm',
-        enableLights: true,
-        ledColor: Colors.amber,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        priority: Priority.max,
-        importance: Importance.max,
-        enableVibration: alarm.vibration,
-        vibrationPattern: setVibrationPattern(),
-        channelShowBadge: true,
-        visibility: NotificationVisibility.public,
-        onlyAlertOnce: true,
-        category: 'alarm',
-        fullScreenIntent: true,
-        playSound: true,
-      )),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-      payload: alarm.alarmId.toString());
+    alarm.id,
+    '${alarm.description}',
+    '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
+    _nextInstanceWeek(alarm),
+    NotificationDetails(
+        android: AndroidNotificationDetails(
+      'Alarm',
+      'Alarm',
+      '卒研猫の会のアラーム',
+      enableLights: true,
+      ledColor: Colors.amber,
+      ledOnMs: 1000,
+      ledOffMs: 500,
+      priority: Priority.max,
+      importance: Importance.max,
+      channelShowBadge: true,
+      visibility: NotificationVisibility.public,
+      category: 'alarm',
+    )),
+    androidAllowWhileIdle: true,
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+    payload: alarm.alarmId.toString(),
+  );
 }
 
 //現在が、目的の時間より前か
@@ -150,7 +153,7 @@ Future onDidReceiveLocalNotification(
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AlarmStop(alarmList[i]),
+                builder: (context) => AlarmStop(),
               ),
             );
           },
@@ -160,20 +163,17 @@ Future onDidReceiveLocalNotification(
   );
 }
 
-Future selectNotification(String payload) async {
-  BuildContext context;
-  if (payload != null) {
-    debugPrint('notification payload: $payload');
+startRingAlarm({bool vibrate = true}) async {
+  Alarm alarm = await getAlarm();
+  if (alarm.vibration == false) vibrate = false;
+  if (vibrate) {
+    Vibration.vibrate(pattern: [500, 500, 500, 500], repeat: 2);
   }
-  relodeAlarmList();
-  int i = 0;
-  while (alarmList[i].alarmId != int.parse(payload)) {
-    i++;
-  }
-  await Navigator.push(
-    context,
-    MaterialPageRoute<void>(builder: (context) => AlarmStop(alarmList[i])),
-  );
+  //volumeを設定項目から取ってくる
+  FlutterRingtonePlayer.playAlarm(looping: true, asAlarm: true, volume: 1.0);
 }
 
-ringringAlarm() {}
+void stopRingAlarm() {
+  FlutterRingtonePlayer.stop();
+  Vibration.cancel();
+}

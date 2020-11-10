@@ -1,6 +1,10 @@
+import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:vibration/vibration.dart';
 
 class Setting extends StatefulWidget {
   Setting({Key key}) : super(key: key);
@@ -11,6 +15,8 @@ class Setting extends StatefulWidget {
 class _SettingState extends State<Setting> {
   String text = '設定画面';
   String yotei = '設定項目';
+  FlutterRingtonePlayer _ringtonePlayer = FlutterRingtonePlayer();
+  Vibration _vibration = Vibration();
 
   @override
   void initState() {
@@ -19,6 +25,7 @@ class _SettingState extends State<Setting> {
 
   @override
   void dispose() {
+    stopRingAlarm();
     super.dispose();
   }
 
@@ -37,6 +44,14 @@ class _SettingState extends State<Setting> {
         children: <Widget>[
           Text(text),
           Text(yotei),
+          RaisedButton(
+            onPressed: () => startRingAlarm(),
+            child: Text('サウンドテスト'),
+          ),
+          RaisedButton(
+            onPressed: () => stopRingAlarm(),
+            child: Text('テスト終了'),
+          ),
         ],
       ),
     );

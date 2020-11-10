@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
+import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/module/move_alarm.dart';
 
 // ignore: must_be_immutable
 class MainMenu extends StatefulWidget {
@@ -20,6 +22,8 @@ class _MainMenuState extends State<MainMenu> {
   //画面描画の前、最初に動作するとこ初期化とかここでおこなったりする
   @override
   void initState() {
+    if (moveAlarm != true) moveAlarm = false;
+    if (alarmedId == null) alarmedId = 0;
     setState(() {
       if (alarmList != null) alarmList.clear();
       loadData();
@@ -69,52 +73,53 @@ class _MainMenuState extends State<MainMenu> {
       //body アプリのメイン画面
       //Column 子供になるパーツが全部縦に並んでくれる　子供はchildren にいれる
       body: SingleChildScrollView(
-        child:
-            /*
-            Text('テーマカラー：amber[800]', style: TextStyle(fontSize: 20)),
-            colortest(Colors.amber[400], 'amber400'),
-            colortest(Colors.lime[600], 'lime600'),
-            colortest(Colors.amberAccent, 'amberAccent'),
-            colortest(Colors.amber[200], 'amber200'),
-            colortest(Colors.amberAccent[100], 'amberAccent100'),
-            colortest(Colors.amber[50], 'amber50'),
-            */
-
-            FutureBuilder(
-                future: loadData(needReturn: true),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    return alarmList.length > 0
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              heightSpacer(height: size.height * 0.01),
-                              Text(
-                                'アラーム登録数：${alarmList.length}',
-                                style: itemName,
-                              ),
-                              ListView.builder(
-                                  shrinkWrap: true,
-                                  reverse: true,
-                                  physics: ScrollPhysics(),
-                                  itemCount: alarmList.length,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (BuildContext context, int i) {
-                                    return GestureDetector(
-                                        child: buildListItem(alarmList[i]),
-                                        onLongPress: () {
-                                          deleteAlarmMode(alarmList[i]);
-                                        });
-                                  })
-                            ],
-                          )
-                        : Center(child: Card(child: Text('アラーム未登録')));
-                  } else {
-                    return Text("同期失敗");
-                  }
-                }),
+        child: FutureBuilder(
+            future: loadData(needReturn: true),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                return alarmList.length > 0
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          heightSpacer(height: size.height * 0.01),
+                          Text(
+                            'アラーム登録数：${alarmList.length}',
+                            style: itemName,
+                          ),
+                          ListView.builder(
+                              shrinkWrap: true,
+                              reverse: true,
+                              physics: ScrollPhysics(),
+                              itemCount: alarmList.length,
+                              scrollDirection: Axis.vertical,
+                              itemBuilder: (BuildContext context, int i) {
+                                return GestureDetector(
+                                  child: buildListItem(alarmList[i]),
+                                  onLongPress: () {
+                                    deleteAlarmMode(alarmList[i]);
+                                  },
+                                  onTap: () => testPage(alarmList[i]),
+                                );
+                              })
+                        ],
+                      )
+                    : Center(child: Card(child: Text('アラーム未登録')));
+              } else {
+                return Text("同期失敗");
+              }
+            }),
       ),
+    );
+  }
+
+  testPage(Alarm alarm) {
+    setState(() {
+      alarmedId = alarm.alarmId;
+    });
+    Navigator.push(
+      context,
+      new MaterialPageRoute(builder: (context) => new AlarmStop()),
     );
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:vibration/vibration.dart';
 
 class Alarm {
   int id;
@@ -28,7 +30,8 @@ class Alarm {
         'description': description,
         'repeat': repeat,
         'vibration': vibration,
-        'qrCodeMode': qrCodeMode
+        'qrCodeMode': qrCodeMode,
+        'stopSnooze': stopSnooze,
       };
 
   Alarm.fromJson(Map json)
@@ -40,5 +43,6 @@ class Alarm {
         description = json['description'],
         repeat = json['repeat'].cast<int>(),
         vibration = json['vibration'],
-        qrCodeMode = json['qrCodeMode'];
+        qrCodeMode = json['qrCodeMode'],
+        stopSnooze = json['stopSnooze'];
 }
