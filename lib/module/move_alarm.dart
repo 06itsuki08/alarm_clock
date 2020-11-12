@@ -1,6 +1,7 @@
 import 'package:alarm_clock/main.dart';
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ setAlarmFirstSchedule(Alarm alarm) async {
       payload: alarm.alarmId.toString());
 }
 
-setAlarmWeeklySchedule(Alarm alarm) async {
+setAlarmWeeklySchedule(Alarm alarm) async* {
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
       tag: 'alarm',
       initialDelay: setBackgroundTimer(_nextInstanceWeek(alarm)),
@@ -86,6 +87,40 @@ setAlarmWeeklySchedule(Alarm alarm) async {
     matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     payload: alarm.alarmId.toString(),
   );
+}
+
+//SnoozeのIDは元のAlarmIDに+1している
+setAlarm10minSnoozeSchedule(Alarm alarm) async* {
+  Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'snooze',
+      tag: 'snooze',
+      initialDelay: setBackgroundTimer(_nextInstanceTime(alarm)),
+      inputData: {'int': alarm.alarmId - 1, 'vibration': alarm.vibration});
+
+  tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+      alarm.id,
+      '${alarm.description}',
+      '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
+      scheduledDate,
+      NotificationDetails(
+          android: AndroidNotificationDetails(
+        'Alarm',
+        'Alarm',
+        '卒研猫の会のアラーム',
+        ledColor: Colors.amber,
+        ledOnMs: 1000,
+        ledOffMs: 500,
+        priority: Priority.max,
+        importance: Importance.max,
+        channelShowBadge: true,
+        visibility: NotificationVisibility.public,
+        category: 'alarm',
+      )),
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      payload: alarm.alarmId.toString());
 }
 
 //現在が、目的の時間より前か
@@ -161,6 +196,43 @@ Future onDidReceiveLocalNotification(
       ],
     ),
   );
+}
+
+setAlarm10minSnooze() async {
+  Alarm alarm = await getAlarm();
+  if (alarm.stopSnooze == false) {
+    DateTime now = DateTime.now();
+    DateTime time = DateTime(
+        now.year, now.month, now.day, alarm.time.hour, alarm.time.minute);
+    List<int> list = [];
+    time.add(new Duration(minutes: 10));
+    Alarm snoozeAlarm = new Alarm(
+        id: alarmList.length,
+        alarmId: alarm.alarmId + 1,
+        time: TimeOfDay.fromDateTime(time),
+        description: alarm.description + 'のスヌーズ',
+        repeat: list,
+        vibration: alarm.vibration,
+        qrCodeMode: alarm.qrCodeMode,
+        stopSnooze: false);
+    setAlarm10minSnoozeSchedule(snoozeAlarm);
+    print('set snooze at ${time.hour} : ${time.minute}');
+  }
+}
+
+stopAlarm10minSnooze() async* {
+  Alarm alarm = await getAlarm();
+  Workmanager.cancelByUniqueName((alarm.alarmId + 1).toString());
+  canselAlarm(alarm.alarmId + 1);
+  if (alarm.repeat.isEmpty) {
+    deleteAlarm(alarm);
+  } else {
+    alarm.stopSnooze = false;
+    setAlarmWeeklySchedule(alarm);
+    deleteAlarmData();
+    saveAlarmData(alarmList);
+  }
+  print('stop snooze');
 }
 
 startRingAlarm({bool vibrate = true}) async {

@@ -26,7 +26,7 @@ class _MainMenuState extends State<MainMenu> {
     if (alarmedId == null) alarmedId = 0;
     setState(() {
       if (alarmList != null) alarmList.clear();
-      loadData();
+      loadAlarmData();
     });
     super.initState();
   }
@@ -74,7 +74,7 @@ class _MainMenuState extends State<MainMenu> {
       //Column 子供になるパーツが全部縦に並んでくれる　子供はchildren にいれる
       body: SingleChildScrollView(
         child: FutureBuilder(
-            future: loadData(needReturn: true),
+            future: loadAlarmData(needReturn: true),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 return alarmList.length > 0

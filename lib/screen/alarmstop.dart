@@ -69,6 +69,7 @@ class _AlarmStopState extends State<AlarmStop> {
       setState(() {
         moveAlarm = false;
         stopRingAlarm();
+        setAlarm10minSnooze();
       });
     } else {
       setState(() {
@@ -177,6 +178,22 @@ class _AlarmStopState extends State<AlarmStop> {
       children: <Widget>[
         Text('質問'),
         Text('回答'),
+        //Test用
+        Text('Snooze解除'),
+        SizedBox(
+            height: size.height * 0.1,
+            width: size.width / 2,
+            child: RaisedButton(
+              onPressed: () {
+                setState(() {
+                  stopAlarm10minSnooze();
+                });
+              },
+              child: Icon(
+                Icons.alarm,
+                size: 50,
+              ),
+            )),
       ],
     );
   }
@@ -184,4 +201,5 @@ class _AlarmStopState extends State<AlarmStop> {
   //movealarm=false;
   //reSuchedule
   //flagOff
+
 }

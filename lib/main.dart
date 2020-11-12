@@ -116,12 +116,15 @@ void callbackDispatcher() {
         alarmedId = inputData['int'];
         print('Ring! Alarm id ${inputData['int']}');
         List<dynamic> list = [inputData['int'], true];
-        /*
-        FlutterRingtonePlayer.playAlarm(
-            looping: true, asAlarm: true, volume: 1.0);
-        if (inputData['vibration'])
-          Vibration.vibrate(pattern: [500, 500, 500, 500], repeat: 2);
-          */
+        final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
+
+        send?.send(list);
+        break;
+      case 'snooze':
+        moveAlarm = true;
+        alarmedId = inputData['int'];
+        print('Ring! Snooze id ${inputData['int']}');
+        List<dynamic> list = [inputData['int'], true];
         final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
 
         send?.send(list);

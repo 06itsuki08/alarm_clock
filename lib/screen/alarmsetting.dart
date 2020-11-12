@@ -307,7 +307,7 @@ class _AlarmSettingState extends State<AlarmSetting> {
         print('setAlarm');
       }
       addAlarm(alarm);
-      saveData(alarmList);
+      saveAlarmData(alarmList);
     });
     Navigator.of(context).pop('savefin');
   }

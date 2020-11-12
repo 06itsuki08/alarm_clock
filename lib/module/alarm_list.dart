@@ -16,15 +16,15 @@ void addAlarm(Alarm alarm) {
 void updateAlarm(Alarm alarm, int i) {
   alarmList[i] = alarm;
   //Todo:通知類の再登録を実装
-  deleteData();
-  saveData(alarmList);
+  deleteAlarmData();
+  saveAlarmData(alarmList);
 }
 
 void relodeAlarmList() async {
   //アラームリストを全消し
   alarmList.clear();
   //端末に保存してあるアラームリストを読み込み
-  List<Alarm> list = await loadData(needReturn: true);
+  List<Alarm> list = await loadAlarmData(needReturn: true);
   alarmList = list;
   print('reloadfin alarmList Item num is ${alarmList.length}');
 }
@@ -32,8 +32,8 @@ void relodeAlarmList() async {
 Future<Alarm> getAlarm() async {
   int i = 0;
   Alarm alarm;
-  List<Alarm> list = await loadData(needReturn: true);
-  print('load fin List item num is ${alarmList.length}');
+  List<Alarm> list = await loadAlarmData(needReturn: true);
+  print('load fin List item size is ${alarmList.length}');
   for (i = 0; i < list.length; i++) {
     if (alarmedId == list[i].alarmId) {
       break;
@@ -60,14 +60,14 @@ Future<Alarm> getAlarm() async {
 void deleteAlarm(Alarm alarm) {
   //バックグラウンド処理の予定のキャンセル
   Workmanager.cancelByUniqueName(alarm.alarmId.toString());
-  //アラームリストからアラームを除外
-  alarmList.remove(alarm);
   //アラームの通知を解除
   canselAlarm(alarm.alarmId);
+  //アラームリストからアラームを除外
+  alarmList.remove(alarm);
   //端末に書き込んだ削除前のアラームリストを一回消去
-  deleteData();
+  deleteAlarmData();
   //アラームを除外されたアラームリストを書き込み
-  saveData(alarmList);
+  saveAlarmData(alarmList);
 }
 
 buildListItem(Alarm alarm) {

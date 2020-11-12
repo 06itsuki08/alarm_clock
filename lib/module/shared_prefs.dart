@@ -4,7 +4,7 @@ import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-saveData(List<Alarm> list) async {
+saveAlarmData(List<Alarm> list) async {
   //await pref.set型("key",val);
   SharedPreferences pref = await SharedPreferences.getInstance();
   list.sort((a, b) => b.time.toString().compareTo(a.time.toString()));
@@ -12,7 +12,7 @@ saveData(List<Alarm> list) async {
   await pref.setStringList('alarms', alarms);
 }
 
-loadData({bool needReturn = false}) async {
+loadAlarmData({bool needReturn = false}) async {
   List<Alarm> list = List<Alarm>();
   //await pref.get型("key");
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -26,12 +26,7 @@ loadData({bool needReturn = false}) async {
   }
 }
 
-deleteData() async {
+deleteAlarmData() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   await pref.remove('alarms');
-}
-
-reloadData() async {
-  SharedPreferences pref = await SharedPreferences.getInstance();
-  await pref.reload();
 }
