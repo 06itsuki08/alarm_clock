@@ -13,7 +13,6 @@ final String alartDeleteAlarm = "このアラームを削除します";
 final String cansel = "cansel";
 final String ok = "ok";
 final String delete = "delete";
-final TextStyle itemName = TextStyle(fontWeight: FontWeight.w600, fontSize: 20);
 Size size;
 bool moveAlarm;
 

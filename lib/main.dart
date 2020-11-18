@@ -12,10 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:vibration/vibration.dart';
 import 'package:workmanager/workmanager.dart';
 import 'dart:isolate';
 
@@ -25,7 +23,6 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 const MethodChannel platform = MethodChannel('alarm_clock');
 final navKey = new GlobalKey<NavigatorState>();
 
-String _payload = '';
 bool runNotification = false;
 String sendPortName = "alarmclock_send_port";
 
@@ -41,16 +38,17 @@ Future<void> main() async {
     } else {
       stopRingAlarm();
     }
-    receivePort.close();
+    print('change Ring');
+    //receivePort.close();
   });
   IsolateNameServer.removePortNameMapping(sendPortName);
   IsolateNameServer.registerPortWithName(receivePort.sendPort, sendPortName);
 
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-  Workmanager.initialize(callbackDispatcher, isInDebugMode: false);
+  Workmanager.initialize(callbackDispatcher, isInDebugMode: true);
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@drawable/notification_icon');
   final IOSInitializationSettings initializationSettingsIOS =
       IOSInitializationSettings(
           onDidReceiveLocalNotification: onDidReceiveLocalNotification,
@@ -72,7 +70,6 @@ Future<void> main() async {
       macOS: initializationSettingsMacOS);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
-    _payload = payload;
     moveAlarm = true;
     print('called onSelectNotification');
   });
@@ -112,7 +109,7 @@ void callbackDispatcher() {
       case Workmanager.iOSBackgroundTask:
         break;
       case 'alarm':
-        moveAlarm = true;
+        if (moveAlarm != true) moveAlarm = true;
         alarmedId = inputData['int'];
         print('Ring! Alarm id ${inputData['int']}');
         List<dynamic> list = [inputData['int'], true];
@@ -121,12 +118,11 @@ void callbackDispatcher() {
         send?.send(list);
         break;
       case 'snooze':
-        moveAlarm = true;
+        if (moveAlarm != true) moveAlarm = true;
         alarmedId = inputData['int'];
         print('Ring! Snooze id ${inputData['int']}');
         List<dynamic> list = [inputData['int'], true];
         final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
-
         send?.send(list);
         break;
     }

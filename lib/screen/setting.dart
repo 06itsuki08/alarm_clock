@@ -1,10 +1,7 @@
-import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
-import 'package:vibration/vibration.dart';
 
 class Setting extends StatefulWidget {
   Setting({Key key}) : super(key: key);
@@ -15,8 +12,6 @@ class Setting extends StatefulWidget {
 class _SettingState extends State<Setting> {
   String text = '設定画面';
   String yotei = '設定項目';
-  FlutterRingtonePlayer _ringtonePlayer = FlutterRingtonePlayer();
-  Vibration _vibration = Vibration();
 
   @override
   void initState() {
@@ -38,21 +33,31 @@ class _SettingState extends State<Setting> {
       ),
       //body アプリのメイン画面
       //Column 子供になるパーツが全部縦に並んでくれる　子供はchildren にいれる
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(text),
-          Text(yotei),
-          RaisedButton(
-            onPressed: () => startRingAlarm(),
-            child: Text('サウンドテスト'),
+      body: Container(
+        height: size.height,
+        width: size.width,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/background.png"),
+            fit: BoxFit.fill,
           ),
-          RaisedButton(
-            onPressed: () => stopRingAlarm(),
-            child: Text('テスト終了'),
-          ),
-        ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(text),
+            Text(yotei),
+            RaisedButton(
+              onPressed: () => startRingAlarm(),
+              child: Text('サウンドテスト'),
+            ),
+            RaisedButton(
+              onPressed: () => stopRingAlarm(),
+              child: Text('テスト終了'),
+            ),
+          ],
+        ),
       ),
     );
   }
