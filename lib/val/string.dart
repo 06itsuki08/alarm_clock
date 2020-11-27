@@ -13,6 +13,7 @@ final String alartDeleteAlarm = "このアラームを削除します";
 final String cansel = "cansel";
 final String ok = "ok";
 final String delete = "delete";
+final String qrcodeText = 'Nekonokai';
 Size size;
 bool moveAlarm;
 

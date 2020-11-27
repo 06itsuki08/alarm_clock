@@ -68,7 +68,7 @@ class _MainMenuState extends State<MainMenu> {
             onPressed: () {
               Navigator.pushNamed(context, '/setting');
             },
-          )
+          ),
         ],
       ),
       //body アプリのメイン画面

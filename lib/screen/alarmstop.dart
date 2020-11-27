@@ -1,12 +1,14 @@
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
-
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/val/string.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import '../main.dart';
 
 class AlarmStop extends StatefulWidget {
@@ -14,7 +16,7 @@ class AlarmStop extends StatefulWidget {
   _AlarmStopState createState() => _AlarmStopState();
 }
 
-class _AlarmStopState extends State<AlarmStop> with WidgetsBindingObserver {
+class _AlarmStopState extends State<AlarmStop> {
   int stopCount;
   Alarm alarm;
   bool qrCodeFin;
@@ -22,26 +24,14 @@ class _AlarmStopState extends State<AlarmStop> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     stopCount = 0;
     qrCodeFin = false;
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     stopRingAlarm();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    //もしアラーム停止中にバックグラウンドから復帰した場合はもう一回ボタン押させる
-    if (state == AppLifecycleState.resumed) {
-      setState(() {
-        stopCount = 0;
-      });
-    }
   }
 
   @override
@@ -69,7 +59,6 @@ class _AlarmStopState extends State<AlarmStop> with WidgetsBindingObserver {
       return alarmMode();
     } else if (alarm.qrCodeMode && qrCodeFin == false) {
       //５回ボタンを押した後でアラームがQRコードモードをオンにしている場合
-      checkAlarmRing();
       return alarmStopOnQRCode();
     } else {
       //５回ボタンを押して、ＱＲコードモードがオフ若しくは、
@@ -90,9 +79,11 @@ class _AlarmStopState extends State<AlarmStop> with WidgetsBindingObserver {
       //10分スヌーズを起動する
       await setAlarm10minSnooze();
       //アラームを停止(音止めた)させた
-      setState(() {
-        moveAlarm = false;
-      });
+      if (qrCodeFin == true) {
+        setState(() {
+          moveAlarm = false;
+        });
+      }
     }
   }
 
@@ -166,7 +157,10 @@ class _AlarmStopState extends State<AlarmStop> with WidgetsBindingObserver {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text('QRcodeを映りこませる'),
+              Text(
+                '専用のQRコードをスキャンしてください',
+                style: TextStyle(fontSize: 20),
+              ),
             ]),
         heightSpacer(height: size.height * 0.1),
         Row(
@@ -177,9 +171,7 @@ class _AlarmStopState extends State<AlarmStop> with WidgetsBindingObserver {
                 width: size.width / 2,
                 child: RaisedButton(
                   onPressed: () {
-                    setState(() {
-                      qrCodeFin = true;
-                    });
+                    getQRCode();
                   },
                   child: Icon(
                     Icons.camera_alt,
@@ -220,5 +212,41 @@ class _AlarmStopState extends State<AlarmStop> with WidgetsBindingObserver {
             )),
       ],
     );
+  }
+
+  getQRCode() async {
+    String scanResult;
+    checkAlarmRing();
+    try {
+      var result = await BarcodeScanner.scan();
+    } on PlatformException catch (e) {
+      var result = ScanResult(
+        type: ResultType.Error,
+        format: BarcodeFormat.unknown,
+      );
+
+      if (e.code == BarcodeScanner.cameraAccessDenied) {
+        setState(() {
+          result.rawContent = 'カメラへのアクセスが許可されていません!';
+        });
+      } else {
+        result.rawContent = 'エラー：$e';
+      }
+      setState(() {
+        scanResult = result.rawContent;
+      });
+    }
+
+    if (scanResult == qrcodeText) {
+      print('QRコードが一致しました');
+      setState(() {
+        qrCodeFin = true;
+      });
+    } else {
+      print('一致しませんでした。');
+      setState(() {
+        qrCodeFin = true;
+      });
+    }
   }
 }

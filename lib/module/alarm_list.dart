@@ -136,7 +136,7 @@ buildListItem(Alarm alarm) {
                     fontFamily: 'MPLUSRounded',
                   ),
                   //最大2行
-                  maxLines: 2,
+                  maxLines: 1,
                   //溢れたら...で丸める
                   overflow: TextOverflow.ellipsis,
                   //ソフト改行で分割するか（多分入力時に改行されたら）
