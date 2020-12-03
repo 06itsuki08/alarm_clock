@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:alarm_clock/module/move_alarm.dart';
+import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/module/user_setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class Setting extends StatefulWidget {
   Setting({Key key}) : super(key: key);
@@ -10,12 +15,12 @@ class Setting extends StatefulWidget {
 }
 
 class _SettingState extends State<Setting> {
-  String text = '設定画面';
-  String yotei = '設定項目';
+  double value = 0.0;
 
   @override
   void initState() {
     super.initState();
+    value = appSetting.volume;
   }
 
   @override
@@ -44,21 +49,67 @@ class _SettingState extends State<Setting> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(text),
-            Text(yotei),
-            RaisedButton(
-              onPressed: () => startRingAlarm(),
-              child: Text('サウンドテスト'),
+            heightSpacer(height: size.height * 0.1),
+            Text('アラームの音量',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Slider(
+              label: '$value',
+              value: value,
+              min: 0.0,
+              max: 1.0,
+              divisions: 10,
+              inactiveColor: Colors.white,
+              activeColor: Colors.amber,
+              onChanged: (e) {
+                setState(() {
+                  value = e;
+                  changeVolume(e);
+                });
+              },
             ),
-            RaisedButton(
-              onPressed: () => stopRingAlarm(),
-              child: Text('テスト終了'),
+            heightSpacer(height: size.height * 0.05),
+            SizedBox(
+              width: size.width * 0.6,
+              height: size.height * 0.07,
+              child: RaisedButton(
+                onPressed: () => startRingAlarm(),
+                child: Text(
+                  'サウンドテスト',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+              ),
+            ),
+            heightSpacer(height: size.height * 0.05),
+            SizedBox(
+              width: size.width * 0.6,
+              height: size.height * 0.07,
+              child: RaisedButton(
+                onPressed: () => stopRingAlarm(),
+                child: Text('サウンドテスト終了',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  changeVolume(double e) {
+    setState(() {
+      appSetting.volume = e;
+    });
+    saveSettingData(appSetting);
+
+    FlutterRingtonePlayer.playAlarm(
+        looping: true, asAlarm: true, volume: appSetting.volume);
+    Timer(const Duration(seconds: 5), () {
+      FlutterRingtonePlayer.stop();
+    });
+    /*
+      */
   }
 }

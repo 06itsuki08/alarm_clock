@@ -2,6 +2,7 @@ import 'package:alarm_clock/main.dart';
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -322,12 +323,14 @@ stopAlarm10minSnooze() async {
 
 startRingAlarm({bool vibrate = true}) async {
   Alarm alarm = await getAlarm();
+  loadSettingData();
   //登録されているアラームのバイブレーションがオンになっていれば振動もさせる
   if (alarm.vibration == false) vibrate = false;
   if (vibrate) {
     Vibration.vibrate(pattern: [500, 500, 500, 500], repeat: 2);
   }
-  FlutterRingtonePlayer.playAlarm(looping: true, asAlarm: true, volume: 1.0);
+  FlutterRingtonePlayer.playAlarm(
+      looping: true, asAlarm: true, volume: appSetting.volume);
 }
 
 void stopRingAlarm() {

@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/user_setting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 saveAlarmData(List<Alarm> list) async {
   //await pref.set型("key",val);
   SharedPreferences pref = await SharedPreferences.getInstance();
   list.sort((a, b) => b.time.toString().compareTo(a.time.toString()));
-  List<String> alarms = alarmList.map((f) => json.encode(f.toJson())).toList();
+  List<String> alarms = list.map((f) => json.encode(f.toJson())).toList();
   await pref.setStringList('alarms', alarms);
 }
 
@@ -29,4 +30,31 @@ loadAlarmData({bool needReturn = false}) async {
 deleteAlarmData() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   await pref.remove('alarms');
+}
+
+saveSettingData(UserSetting setting) async {
+  //await pref.set型("key",val);
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  String settings = json.encode(setting.toJson());
+  await pref.setString('settingss', settings);
+  print('設定データ保存完了');
+}
+
+loadSettingData({bool needReturn = false}) async {
+  UserSetting settings = UserSetting();
+  //await pref.get型("key");
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  var result = pref.getString('settings');
+  if (result != null) {
+    settings = UserSetting.fromJson(json.decode(result));
+  } else {
+    settings = UserSetting(volume: 1.0);
+  }
+  appSetting = settings;
+  print('設定データ読み込み完了');
+}
+
+deleteSettingData() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  await pref.remove('settings');
 }

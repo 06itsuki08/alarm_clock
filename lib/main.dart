@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
@@ -86,6 +88,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+    //設定データを読み込み
+
+    loadSettingData();
+
     return MaterialApp(
       title: title,
       //右上のデバッグモードって帯を消す
