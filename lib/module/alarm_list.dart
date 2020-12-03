@@ -118,8 +118,9 @@ buildListItem(Alarm alarm) {
                   buildCameraIcon(alarm.qrCodeMode),
                 ],
               ),
-              //曜日　この先でもフォントサイズとか弄っている
-              checkRepeat(alarm.repeat),
+              if (alarm.repeat.length > 0)
+                //曜日　この先でもフォントサイズとか弄っている
+                checkRepeat(alarm.repeat),
             ],
           ),
           //3行目

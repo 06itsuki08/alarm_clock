@@ -61,13 +61,38 @@ class _MainMenuState extends State<MainMenu> {
               ).then(onGoBack);
             }, //
           ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            iconSize: 35,
-            color: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/setting');
+          PopupMenuButton<int>(
+            color: Colors.white.withOpacity(0.9),
+            icon: Icon(
+              Icons.settings,
+              color: Colors.white,
+              size: 35,
+            ),
+            onSelected: (int i) {
+              switch (i) {
+                //設定ボタン
+                case 0:
+                  Navigator.pushNamed(context, '/setting');
+                  break;
+                //ヘルプボタン
+                case 1:
+                  Navigator.pushNamed(context, '/help');
+                  break;
+              }
             },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+              PopupMenuItem(
+                value: 0,
+                child: Text(
+                  '設定',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              PopupMenuItem(
+                value: 1,
+                child: Text('ヘルプ', style: TextStyle(fontSize: 20)),
+              ),
+            ],
           ),
         ],
       ),
@@ -144,9 +169,33 @@ class _MainMenuState extends State<MainMenu> {
                               color: Colors.white.withOpacity(0.85),
                               child: Padding(
                                   padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                  child: Text(
-                                    'アラーム未登録',
-                                    style: TextStyle(fontSize: 40),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'アラーム未登録',
+                                        style: TextStyle(fontSize: 40),
+                                      ),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '上の',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                          Icon(Icons.alarm_add),
+                                          Text(
+                                            'からアラームを追加',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ))));
                 } else {
                   //取得失敗した場合

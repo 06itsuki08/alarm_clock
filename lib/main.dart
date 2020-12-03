@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
+import 'package:alarm_clock/screen/help.dart';
 import 'package:alarm_clock/screen/home.dart';
 import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:alarm_clock/screen/setting.dart';
@@ -99,6 +100,7 @@ class MyApp extends StatelessWidget {
         '/setting': (context) => Setting(),
         '/alarmstop': (context) => AlarmStop(),
         '/snoozestop': (context) => SnoozeStop(),
+        '/help': (context) => Help(),
       },
     );
   }

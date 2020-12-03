@@ -106,13 +106,9 @@ class _AlarmSettingState extends State<AlarmSetting> {
                                   widthSpacer(width: size.width * 0.1),
                                   SizedBox(
                                     child: Text(
-                                      '説明',
+                                      'アラームの説明',
                                       style: itemName,
                                     ),
-                                  ),
-                                  widthSpacer(width: size.width * 0.05),
-                                  Text(
-                                    '※最大2行まで登録できます',
                                   ),
                                 ],
                               ),
@@ -127,8 +123,11 @@ class _AlarmSettingState extends State<AlarmSetting> {
                                       controller: textCtrl,
                                       cursorColor: Colors.amber,
                                       keyboardType: TextInputType.multiline,
-                                      maxLines: 2,
-                                      minLines: 1,
+                                      maxLines: 1,
+                                      decoration: InputDecoration(
+                                        hintText: 'アラーム一覧や動作時に表示される文字です。',
+                                        hintStyle: TextStyle(fontSize: 15),
+                                      ),
                                     ),
                                   ),
                                 ],
