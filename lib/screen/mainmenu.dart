@@ -94,6 +94,12 @@ class _MainMenuState extends State<MainMenu> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
+                            RaisedButton(
+                              child: Text('QuizTest'),
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/snoozestop');
+                              },
+                            ),
                             heightSpacer(height: size.height * 0.01),
                             Container(
                               color: Colors.white.withOpacity(0.5),

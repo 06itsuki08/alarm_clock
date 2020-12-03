@@ -44,6 +44,7 @@ class _AlarmSettingState extends State<AlarmSetting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBody: true,
       extendBodyBehindAppBar: true,
       //body アプリのメイン画面

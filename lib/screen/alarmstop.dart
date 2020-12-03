@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
+import 'package:alarm_clock/module/quiz.dart';
+import 'package:alarm_clock/screen/snoozestop.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,15 +19,25 @@ class AlarmStop extends StatefulWidget {
 }
 
 class _AlarmStopState extends State<AlarmStop> {
-  int stopCount;
+  int stopCount; //５回タップ用カウンター
   Alarm alarm;
-  bool qrCodeFin;
+  bool qrCodeFin; //QRコードが正確に読み取れたか
+  bool qrCodeFalse; //QRコードの取得が失敗したらtrue
+  TextEditingController textCtrl;
+  bool pushQRQuiz; //QRコード代わりのクイズが選択されたか
+  List<int> numQuiz; //QRコード代わりのクイズ
+  bool quizIncorrectAnswer; //クイズが不正解だとtrue
 
   @override
   void initState() {
     super.initState();
     stopCount = 0;
     qrCodeFin = false;
+    qrCodeFalse = false;
+    pushQRQuiz = false;
+    textCtrl = TextEditingController();
+    numQuiz = randomNumAdd(3);
+    quizIncorrectAnswer = false;
   }
 
   @override
@@ -38,6 +50,7 @@ class _AlarmStopState extends State<AlarmStop> {
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text(alarmstop),
         ),
@@ -57,14 +70,17 @@ class _AlarmStopState extends State<AlarmStop> {
     //５回ボタンを押すまではボタンを押す画面
     if (stopCount < 5) {
       return alarmMode();
+    } else if (alarm.qrCodeMode && pushQRQuiz && qrCodeFin == false) {
+      //QRコードが読み超えないときに代わりに問題を解く
+      return falseQRCode();
     } else if (alarm.qrCodeMode && qrCodeFin == false) {
       //５回ボタンを押した後でアラームがQRコードモードをオンにしている場合
       return alarmStopOnQRCode();
     } else {
-      //５回ボタンを押して、ＱＲコードモードがオフ若しくは、
+      //５回ボタンを押して、ＱＲコードモードがオフ若しくは、QRコードを読み終えた（クイズを解いた）
       qrCodeFin = true;
       checkAlarmRing();
-      return snoozeStopMode();
+      return quizStart();
     }
   }
 
@@ -76,10 +92,10 @@ class _AlarmStopState extends State<AlarmStop> {
       List<dynamic> list = [alarmedId, false];
       send?.send(list);
 
-      //10分スヌーズを起動する
-      await setAlarm10minSnooze();
       //アラームを停止(音止めた)させた
       if (qrCodeFin == true) {
+        //10分スヌーズを起動する
+        await setAlarm10minSnooze();
         setState(() {
           moveAlarm = false;
         });
@@ -147,7 +163,6 @@ class _AlarmStopState extends State<AlarmStop> {
   }
 
   //QRcodeでスヌーズを止めさせる
-  //実装中
   alarmStopOnQRCode() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -159,10 +174,10 @@ class _AlarmStopState extends State<AlarmStop> {
             children: <Widget>[
               Text(
                 '専用のQRコードをスキャンしてください',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ]),
-        heightSpacer(height: size.height * 0.1),
+        heightSpacer(height: size.height * 0.3),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -181,61 +196,43 @@ class _AlarmStopState extends State<AlarmStop> {
           ],
         ),
         heightSpacer(height: size.height * 0.1),
-      ],
-    );
-  }
-
-  //クイズ？をやらせる（ここで10分スヌーズを解除する）
-  snoozeStopMode() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Text('質問'),
-        Text('回答'),
-        //Test用
-        Text('Snooze解除'),
-        SizedBox(
-            height: size.height * 0.1,
-            width: size.width / 2,
-            child: RaisedButton(
-              onPressed: () {
-                setState(() async {
-                  await stopAlarm10minSnooze();
-                  Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
-                });
-              },
-              child: Icon(
-                Icons.alarm,
-                size: 50,
-              ),
-            )),
+        if (qrCodeFalse)
+          RaisedButton(
+            onPressed: () {
+              setState(() {
+                pushQRQuiz = true;
+              });
+            },
+            child: Text(
+              'QRコードが読み込めない場合はこちら',
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        heightSpacer(height: size.height * 0.1),
       ],
     );
   }
 
   getQRCode() async {
-    String scanResult;
+    String scanResult = '';
     checkAlarmRing();
+    ScanResult result;
     try {
-      var result = await BarcodeScanner.scan();
+      result = await BarcodeScanner.scan();
     } on PlatformException catch (e) {
-      var result = ScanResult(
+      result = ScanResult(
         type: ResultType.Error,
         format: BarcodeFormat.unknown,
       );
 
       if (e.code == BarcodeScanner.cameraAccessDenied) {
-        setState(() {
-          result.rawContent = 'カメラへのアクセスが許可されていません!';
-        });
+        result.rawContent = 'カメラへのアクセスが許可されていません!';
       } else {
         result.rawContent = 'エラー：$e';
       }
-      setState(() {
-        scanResult = result.rawContent;
-      });
     }
+    scanResult = result.rawContent;
+    print('QRコードの読み取り結果：$scanResult');
 
     if (scanResult == qrcodeText) {
       print('QRコードが一致しました');
@@ -245,8 +242,109 @@ class _AlarmStopState extends State<AlarmStop> {
     } else {
       print('一致しませんでした。');
       setState(() {
-        qrCodeFin = true;
+        qrCodeFalse = true;
+        qrCodeFin = false;
       });
     }
+  }
+
+  falseQRCode() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            widthSpacer(width: size.width * 0.05),
+            Expanded(
+              child: Text(
+                'Q.下の足し算に回答してアラームを停止',
+                style: TextStyle(fontSize: 20),
+                maxLines: 3,
+                softWrap: true,
+              ),
+            ),
+            widthSpacer(width: size.width * 0.05),
+          ],
+        ),
+        heightSpacer(height: size.height * 0.1),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              '${numQuiz[0]}＋${numQuiz[1]}＋${numQuiz[2]}＝？',
+              style: TextStyle(fontSize: 30),
+            ),
+          ],
+        ),
+        heightSpacer(height: size.height * 0.05),
+        if (quizIncorrectAnswer)
+          Text(
+            '不正解',
+            style: TextStyle(color: Colors.red, fontSize: 18),
+          ),
+        SizedBox(
+          width: size.width * 0.2,
+          child: TextField(
+            enabled: true,
+            controller: textCtrl,
+            cursorColor: Colors.amber,
+            keyboardType: TextInputType.number,
+            maxLines: 1,
+          ),
+        ),
+        heightSpacer(height: size.height * 0.05),
+        RaisedButton(
+          onPressed: () {
+            if (int.parse(textCtrl.text) == numQuiz[3]) {
+              setState(() {
+                qrCodeFin = true;
+                quizIncorrectAnswer = false;
+                pushQRQuiz = false;
+              });
+            } else {
+              setState(() {
+                quizIncorrectAnswer = true;
+              });
+            }
+          },
+          child: Text('答え合わせ'),
+        ),
+      ],
+    );
+  }
+
+  //クイズ開始画面
+  quizStart() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        heightSpacer(height: size.height * 0.1),
+        Text(
+          '10分後にスヌーズが鳴ります。\nクイズに答えてスヌーズを解除しましょう！',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        heightSpacer(height: size.height * 0.1),
+        SizedBox(
+          height: size.height * 0.1,
+          width: size.width / 2,
+          child: RaisedButton(
+            onPressed: () {
+              setState(() {
+                Navigator.pushNamed(context, '/snoozestop');
+              });
+            },
+            child: Text(
+              'クイズ開始',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

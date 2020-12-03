@@ -7,6 +7,7 @@ final String title = "カメラde目覚まし📷";
 final String alarmSetting = "アラーム設定";
 final String setting = "設定";
 final String alarmstop = "アラーム停止";
+final String snoozestop = "スヌーズ解除";
 final String alartCaution = "注意";
 final String alartConfirmation = "確認";
 final String alartDeleteAlarm = "このアラームを削除します";

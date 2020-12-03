@@ -6,6 +6,7 @@ import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:alarm_clock/screen/home.dart';
 import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:alarm_clock/screen/setting.dart';
+import 'package:alarm_clock/screen/snoozestop.dart';
 import 'package:alarm_clock/val/color.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,7 +46,7 @@ Future<void> main() async {
   IsolateNameServer.registerPortWithName(receivePort.sendPort, sendPortName);
 
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-  Workmanager.initialize(callbackDispatcher, isInDebugMode: true);
+  Workmanager.initialize(callbackDispatcher, isInDebugMode: false);
 
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@drawable/notification_icon');
@@ -97,6 +98,7 @@ class MyApp extends StatelessWidget {
         '/alarmsetting': (context) => AlarmSetting(),
         '/setting': (context) => Setting(),
         '/alarmstop': (context) => AlarmStop(),
+        '/snoozestop': (context) => SnoozeStop(),
       },
     );
   }

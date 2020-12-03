@@ -33,21 +33,21 @@ void relodeAlarmList() async {
 Future<Alarm> getAlarm() async {
   int i = 0;
   Alarm alarm;
-  List<Alarm> list = await loadAlarmData(needReturn: true);
+  List<Alarm> _alarmlist = await loadAlarmData(needReturn: true);
   print('load fin List item size is ${alarmList.length}');
-  for (i = 0; i < list.length; i++) {
-    if (alarmedId == list[i].alarmId) {
+  for (i = 0; i < _alarmlist.length; i++) {
+    if (alarmedId == _alarmlist[i].alarmId) {
       break;
     }
   }
-  if (i != list.length) {
-    alarm = list[i];
+  if (i < _alarmlist.length) {
+    alarm = _alarmlist[i];
     return alarm;
   } else {
     List<int> list = [];
     alarm = new Alarm(
         id: list.length,
-        alarmId: 0,
+        alarmId: alarmedId,
         time: TimeOfDay.now(),
         description: 'アラーム取得失敗',
         repeat: list,
