@@ -5,10 +5,22 @@
          In most cases you can leave this as-is, but you if you want to provide
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
+        <uses-permission android:name="android.permission.CAMERA" />
+        <uses-permission android:name="android.permission.VIBRATE" />
+        <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="カメラde目覚まし📷"
         android:icon="@mipmap/ic_launcher">
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+              <action android:name="android.intent.action.BOOT_COMPLETED"/>
+              <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+              <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+              <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+          </receiver>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -43,5 +55,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        
     </application>
 </manifest>

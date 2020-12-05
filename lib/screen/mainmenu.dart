@@ -3,12 +3,14 @@ import 'dart:io';
 
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
-import 'package:alarm_clock/module/test.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
+import 'package:alarm_clock/screen/alarmstop.dart';
+import 'package:alarm_clock/val/color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/module/move_alarm.dart';
 
 // ignore: must_be_immutable
 class MainMenu extends StatefulWidget {
@@ -21,9 +23,11 @@ class _MainMenuState extends State<MainMenu> {
   //画面描画の前、最初に動作するとこ初期化とかここでおこなったりする
   @override
   void initState() {
+    if (moveAlarm != true) moveAlarm = false;
+    if (alarmedId == null) alarmedId = 0;
     setState(() {
       if (alarmList != null) alarmList.clear();
-      loadData();
+      loadAlarmData();
     });
     super.initState();
   }
@@ -57,64 +61,149 @@ class _MainMenuState extends State<MainMenu> {
               ).then(onGoBack);
             }, //
           ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            iconSize: 35,
-            color: Colors.white,
-            onPressed: () {
-              Navigator.pushNamed(context, '/setting');
+          PopupMenuButton<int>(
+            color: Colors.white.withOpacity(0.9),
+            icon: Icon(
+              Icons.settings,
+              color: Colors.white,
+              size: 35,
+            ),
+            onSelected: (int i) {
+              switch (i) {
+                //設定ボタン
+                case 0:
+                  Navigator.pushNamed(context, '/setting');
+                  break;
+                //ヘルプボタン
+                case 1:
+                  Navigator.pushNamed(context, '/help');
+                  break;
+              }
             },
-          )
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+              PopupMenuItem(
+                value: 0,
+                child: Text(
+                  '設定',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              PopupMenuItem(
+                value: 1,
+                child: Text('ヘルプ', style: TextStyle(fontSize: 20)),
+              ),
+            ],
+          ),
         ],
       ),
       //body アプリのメイン画面
-      //Column 子供になるパーツが全部縦に並んでくれる　子供はchildren にいれる
-      body: SingleChildScrollView(
-        child:
-            /*
-            Text('テーマカラー：amber[800]', style: TextStyle(fontSize: 20)),
-            colortest(Colors.amber[400], 'amber400'),
-            colortest(Colors.lime[600], 'lime600'),
-            colortest(Colors.amberAccent, 'amberAccent'),
-            colortest(Colors.amber[200], 'amber200'),
-            colortest(Colors.amberAccent[100], 'amberAccent100'),
-            colortest(Colors.amber[50], 'amber50'),
-            */
-
-            FutureBuilder(
-                future: loadData(needReturn: true),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    return alarmList.length > 0
-                        ? Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              heightSpacer(height: size.height * 0.01),
-                              Text(
-                                'アラーム登録数：${alarmList.length}',
-                                style: itemName,
+      body: Container(
+        height: size.height,
+        width: size.width,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/background.png"),
+            fit: BoxFit.fill,
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: FutureBuilder(
+              //端末に保存したアラームリストを取得する
+              future: loadAlarmData(needReturn: true),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                //アラームリストが取得できた場合
+                //まだ何も保存されていなくても空っぽのアラームリストが返ってきている
+                if (snapshot.hasData) {
+                  return alarmList.length > 0
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            /*クイズ検証用ショトカ
+                            RaisedButton(
+                              child: Text('QuizTest'),
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/snoozestop');
+                              },
+                            ),*/
+                            heightSpacer(height: size.height * 0.01),
+                            Container(
+                              color: Colors.white.withOpacity(0.5),
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                child: Text(
+                                  'アラーム登録数：${alarmList.length}',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'MPLUSRounded',
+                                  ),
+                                ),
                               ),
-                              ListView.builder(
-                                  shrinkWrap: true,
-                                  reverse: true,
-                                  physics: ScrollPhysics(),
-                                  itemCount: alarmList.length,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (BuildContext context, int i) {
-                                    return GestureDetector(
-                                        child: buildListItem(alarmList[i]),
-                                        onLongPress: () {
-                                          deleteAlarmMode(alarmList[i]);
-                                        });
-                                  })
-                            ],
-                          )
-                        : Center(child: Card(child: Text('アラーム未登録')));
-                  } else {
-                    return Text("同期失敗");
-                  }
-                }),
+                            ),
+                            //アラームのリストを表示する。
+                            //表示させるリストの項目は'alarmlist.dart'にある'buildListItem'にある
+                            ListView.builder(
+                                shrinkWrap: true,
+                                reverse: true,
+                                physics: ScrollPhysics(),
+                                itemCount: alarmList.length,
+                                scrollDirection: Axis.vertical,
+                                itemBuilder: (BuildContext context, int i) {
+                                  return GestureDetector(
+                                    child: buildListItem(alarmList[i]),
+                                    //アラームの削除は、リスト項目を長押しすると出る
+                                    onLongPress: () {
+                                      deleteAlarmMode(alarmList[i]);
+                                    },
+                                  );
+                                })
+                          ],
+                        )
+                      : Center(
+                          child: Card(
+                              //カード間を周囲10ポイント？空ける
+                              margin:
+                                  const EdgeInsets.fromLTRB(10, 20.0, 10, 10),
+                              //標高ってでてきたけど完全透明(color:Colors.transナンチャラ)にする際はこれが必要らしい
+                              elevation: 0,
+                              //カードの背景色を白かつ透明度を0.85にする
+                              color: Colors.white.withOpacity(0.85),
+                              child: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'アラーム未登録',
+                                        style: TextStyle(fontSize: 40),
+                                      ),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '上の',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                          Icon(Icons.alarm_add),
+                                          Text(
+                                            'からアラームを追加',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ))));
+                } else {
+                  //取得失敗した場合
+                  return Text("同期失敗");
+                }
+              }),
+        ),
       ),
     );
   }

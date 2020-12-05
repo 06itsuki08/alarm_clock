@@ -2,38 +2,74 @@ import 'dart:convert';
 
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/quiz.dart';
+import 'package:alarm_clock/module/user_setting.dart';
+import 'package:alarm_clock/val/string.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-saveData(List<Alarm> list) async {
+saveAlarmData(List<Alarm> list) async {
   //await pref.set型("key",val);
   SharedPreferences pref = await SharedPreferences.getInstance();
   list.sort((a, b) => b.time.toString().compareTo(a.time.toString()));
-  List<String> alarms = alarmList.map((f) => json.encode(f.toJson())).toList();
+  List<String> alarms = list.map((f) => json.encode(f.toJson())).toList();
   await pref.setStringList('alarms', alarms);
 }
 
-loadData({bool needReturn = false}) async {
-  alarmList = List<Alarm>();
+loadAlarmData({bool needReturn = false}) async {
+  List<Alarm> list = List<Alarm>();
   //await pref.get型("key");
   SharedPreferences pref = await SharedPreferences.getInstance();
   var result = pref.getStringList('alarms');
   if (result != null) {
-    if (alarmList.isNotEmpty) alarmList.clear();
-    alarmList = result.map((f) => Alarm.fromJson(json.decode(f))).toList();
-  } else {
-    alarmList.clear();
+    list = result.map((f) => Alarm.fromJson(json.decode(f))).toList();
   }
+  alarmList = list;
   if (needReturn == true) {
-    return alarmList;
+    return list;
   }
 }
 
-deleteData() async {
+deleteAlarmData() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   await pref.remove('alarms');
 }
 
-reloadData() async {
+saveSettingData(UserSetting setting) async {
+  //await pref.set型("key",val);
   SharedPreferences pref = await SharedPreferences.getInstance();
-  await pref.reload();
+  String settings = json.encode(setting.toJson());
+  await pref.setString('settings', settings);
+  print('設定データ保存完了');
+}
+
+loadSettingData({bool needReturn = false}) async {
+  UserSetting settings = UserSetting();
+  //await pref.get型("key");
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  var result = pref.getString('settings');
+  if (result != null) {
+    settings = UserSetting.fromJson(json.decode(result));
+    print('設定データ読み込み成功');
+  } else {
+    List<bool> intList = [];
+    for (int i = 0; i < quizList.length; i++) {
+      intList.add(true);
+    }
+    settings = UserSetting(
+        movingAlarmId: 0,
+        feastAlarmTime: initDateTime,
+        volume: 1.0,
+        useQuiz: intList,
+        quizClearCount: 3);
+    print('設定データ読み込み失敗');
+  }
+  appSetting = settings;
+  print('直近のアラームID：${appSetting.movingAlarmId}');
+  print('設定データ読み込み完了');
+}
+
+deleteSettingData() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  await pref.remove('settings');
 }
