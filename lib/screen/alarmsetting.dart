@@ -318,7 +318,7 @@ class _AlarmSettingState extends State<AlarmSetting> {
         setAlarmWeeklySchedule(alarm);
         print('setWeekAlarm');
       } else {
-        setAlarmFirstSchedule(alarm);
+        setAlarmOnceSchedule(alarm);
         print('setAlarm');
       }
       addAlarm(alarm);

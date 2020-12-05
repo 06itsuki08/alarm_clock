@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/quiz.dart';
 import 'package:alarm_clock/module/user_setting.dart';
+import 'package:alarm_clock/val/string.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 saveAlarmData(List<Alarm> list) async {
@@ -36,7 +39,7 @@ saveSettingData(UserSetting setting) async {
   //await pref.set型("key",val);
   SharedPreferences pref = await SharedPreferences.getInstance();
   String settings = json.encode(setting.toJson());
-  await pref.setString('settingss', settings);
+  await pref.setString('settings', settings);
   print('設定データ保存完了');
 }
 
@@ -47,10 +50,22 @@ loadSettingData({bool needReturn = false}) async {
   var result = pref.getString('settings');
   if (result != null) {
     settings = UserSetting.fromJson(json.decode(result));
+    print('設定データ読み込み成功');
   } else {
-    settings = UserSetting(volume: 1.0);
+    List<bool> intList = [];
+    for (int i = 0; i < quizList.length; i++) {
+      intList.add(true);
+    }
+    settings = UserSetting(
+        movingAlarmId: 0,
+        feastAlarmTime: initDateTime,
+        volume: 1.0,
+        useQuiz: intList,
+        quizClearCount: 3);
+    print('設定データ読み込み失敗');
   }
   appSetting = settings;
+  print('直近のアラームID：${appSetting.movingAlarmId}');
   print('設定データ読み込み完了');
 }
 

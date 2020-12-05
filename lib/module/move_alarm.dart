@@ -4,6 +4,7 @@ import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
+import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -28,7 +29,7 @@ setBackgroundTimer(tz.TZDateTime time) {
 }
 
 //アラームに曜日のくり返しが無い場合は直近のその時間に鳴らす（当日か翌日に鳴る）
-setAlarmFirstSchedule(Alarm alarm) async {
+setAlarmOnceSchedule(Alarm alarm) async {
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
       tag: 'alarm',
       initialDelay: setBackgroundTimer(_nextInstanceTime(alarm)),
@@ -43,7 +44,7 @@ setAlarmFirstSchedule(Alarm alarm) async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
       '${alarm.description}',
-      '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
+      'アラームの時間になりました！',
       scheduledDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
@@ -63,12 +64,14 @@ setAlarmFirstSchedule(Alarm alarm) async {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      payload: alarm.alarmId.toString());
+      payload: '$scheduledDate');
+  setSettingAlarmId(alarm, _nextInstanceTime(alarm));
 }
 
 //アラームに曜日のくり返しがある場合に使う
 setAlarmWeeklySchedule(Alarm alarm) async {
   print('曜日登録開始');
+  tz.TZDateTime scheduledDate = _nextInstanceWeek(alarm);
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
       tag: 'alarm',
       initialDelay: setBackgroundTimer(_nextInstanceWeek(alarm)),
@@ -83,7 +86,7 @@ setAlarmWeeklySchedule(Alarm alarm) async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
       '${alarm.description}',
-      '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
+      'アラームの時間になりました！',
       _nextInstanceWeek(alarm),
       NotificationDetails(
           android: AndroidNotificationDetails(
@@ -103,12 +106,14 @@ setAlarmWeeklySchedule(Alarm alarm) async {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      payload: alarm.alarmId.toString());
+      payload: '$scheduledDate');
+  setSettingAlarmId(alarm, _nextInstanceWeek(alarm));
   print('通知登録完了');
 }
 
 //SnoozeのIDは元のAlarmIDに+1している
 setAlarm10minSnoozeSchedule(Alarm alarm) async {
+  tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'snooze',
       tag: 'snooze',
       initialDelay: setBackgroundTimer(_nextInstanceTime(alarm)),
@@ -119,11 +124,10 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
         'minute': alarm.time.minute
       });
 
-  tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
       '${alarm.description}',
-      '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
+      '${alarm.description}のスヌーズ',
       scheduledDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
@@ -143,8 +147,10 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
-      payload: (alarm.alarmId - 1).toString());
+      payload: '$scheduledDate');
   print('scheduled notification ID : ${alarm.alarmId}');
+
+  setSettingAlarmId(alarm, _nextInstanceTime(alarm));
 }
 
 //現在が、目的の時間より前か
@@ -220,7 +226,7 @@ Future onDidReceiveLocalNotification(
   // display a dialog with the notification details, tap ok to go to another page
   BuildContext context;
   Alarm alarm = await getAlarm();
-  alarmedId = alarm.alarmId;
+  alarmedId = appSetting.movingAlarmId;
   showDialog(
     context: context,
     builder: (BuildContext context) => CupertinoAlertDialog(
@@ -283,11 +289,6 @@ stopAlarm10minSnooze() async {
   Workmanager.cancelByUniqueName(id.toString());
   await flutterLocalNotificationsPlugin.cancel(id);
   print('cansel snooze schedule ID:$id');
-  //予約されている通知一覧を取得 主にデバック用
-  /*
-  List<PendingNotificationRequest> pendingNotificationRequests =
-      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-      */
 
   //もし単発のアラームであれば削除する
   //alarmListと端末からも消える　ホーム画面でも消える
@@ -309,16 +310,30 @@ stopAlarm10minSnooze() async {
     await saveAlarmData(alarmList);
     print('set weekly alarm');
   }
-  //予約されている通知のリストを表示させる　主にデバッグ用
-  /*pendingNotificationRequests =
-      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-  print('保留中の通知リスト');
-  for (int i = 0; i < pendingNotificationRequests.length; i++) {
-    print('ID : ${pendingNotificationRequests[i].id}');
-    print('Body : ${pendingNotificationRequests[i].body}');
-  }*/
 
   print('stop snooze');
+}
+
+setSettingAlarmId(Alarm alarm, tz.TZDateTime scheduledDate) async {
+  if (appSetting.movingAlarmId == 0 ||
+      appSetting.feastAlarmTime == initDateTime) {
+    appSetting.movingAlarmId = alarm.alarmId;
+    appSetting.feastAlarmTime = scheduledDate;
+
+    print('直近のアラーム情報が設定されました。\nID:${alarm.alarmId} Time:${scheduledDate}');
+  } else {
+    //設定データに登録されている時間よりも新規アラームの方が早い時
+    if (appSetting.feastAlarmTime.isAfter(scheduledDate)) {
+      appSetting.feastAlarmTime = scheduledDate;
+      appSetting.movingAlarmId = alarm.alarmId;
+      print(
+          '直近のアラーム情報が更新されました。\nID:${appSetting.feastAlarmTime} Time:${appSetting.movingAlarmId}');
+    } else {
+      print('直近のアラーム情報の更新は必要ありません');
+    }
+  }
+  deleteSettingData();
+  saveSettingData(appSetting);
 }
 
 startRingAlarm({bool vibrate = true}) async {

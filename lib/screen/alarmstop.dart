@@ -5,6 +5,8 @@ import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/module/quiz.dart';
+import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/snoozestop.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:barcode_scan/barcode_scan.dart';

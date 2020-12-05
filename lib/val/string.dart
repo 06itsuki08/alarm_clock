@@ -2,6 +2,8 @@
 //final 型 名前="";
 
 import 'package:flutter/material.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 final String title = "カメラde目覚まし📷";
 final String alarmSetting = "アラーム設定";
@@ -15,6 +17,7 @@ final String cansel = "cansel";
 final String ok = "ok";
 final String delete = "delete";
 final String qrcodeText = 'Nekonokai';
+final tz.TZDateTime initDateTime = tz.TZDateTime(tz.local, 2020, 1, 1, 0, 0);
 Size size;
 bool moveAlarm;
 

@@ -1,11 +1,16 @@
+import 'package:alarm_clock/main.dart';
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
+import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/val/color.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 List<Alarm> alarmList;
 
@@ -34,9 +39,12 @@ Future<Alarm> getAlarm() async {
   int i = 0;
   Alarm alarm;
   List<Alarm> _alarmlist = await loadAlarmData(needReturn: true);
+  await loadSettingData();
+  alarmedId = appSetting.movingAlarmId;
   print('load fin List item size is ${alarmList.length}');
+  print('AlarmedID is $alarmedId');
   for (i = 0; i < _alarmlist.length; i++) {
-    if (alarmedId == _alarmlist[i].alarmId) {
+    if (appSetting.movingAlarmId == _alarmlist[i].alarmId) {
       break;
     }
   }
@@ -46,10 +54,10 @@ Future<Alarm> getAlarm() async {
   } else {
     List<int> list = [];
     alarm = new Alarm(
-        id: list.length,
-        alarmId: alarmedId,
+        id: 0,
+        alarmId: appSetting.movingAlarmId,
         time: TimeOfDay.now(),
-        description: 'アラーム取得失敗',
+        description: 'アラーム',
         repeat: list,
         vibration: true,
         qrCodeMode: true,
@@ -58,7 +66,7 @@ Future<Alarm> getAlarm() async {
   }
 }
 
-void deleteAlarm(Alarm alarm) {
+Future<void> deleteAlarm(Alarm alarm) async {
   //バックグラウンド処理の予定のキャンセル
   Workmanager.cancelByUniqueName(alarm.alarmId.toString());
   Workmanager.cancelByUniqueName((alarm.alarmId + 1).toString());
@@ -71,6 +79,32 @@ void deleteAlarm(Alarm alarm) {
   deleteAlarmData();
   //アラームを除外されたアラームリストを書き込み
   saveAlarmData(alarmList);
+
+  final List<PendingNotificationRequest> pendingNotificationRequests =
+      await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+  if (pendingNotificationRequests.isEmpty ||
+      pendingNotificationRequests.length == 0) {
+    appSetting.feastAlarmTime = initDateTime;
+    appSetting.movingAlarmId = 0;
+  } else {
+    appSetting.feastAlarmTime = initDateTime;
+    appSetting.movingAlarmId = 0;
+    pendingNotificationRequests.forEach((element) {
+      tz.TZDateTime elementTime =
+          tz.TZDateTime.parse(tz.local, element.payload);
+      if (appSetting.feastAlarmTime == initDateTime) {
+        appSetting.feastAlarmTime = elementTime;
+        appSetting.movingAlarmId = element.id;
+      } else if (appSetting.feastAlarmTime.isAfter(elementTime)) {
+        appSetting.feastAlarmTime = elementTime;
+        appSetting.movingAlarmId = element.id;
+        print('直近のアラーム情報が再設定されました。\nID:${element.id} Time:${elementTime}');
+      }
+    });
+  }
+
+  deleteSettingData();
+  saveSettingData(appSetting);
 }
 
 buildListItem(Alarm alarm) {

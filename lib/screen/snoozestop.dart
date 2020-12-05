@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/module/quiz.dart';
+import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -11,20 +14,47 @@ class SnoozeStop extends StatefulWidget {
 
 class _SnoozeStopState extends State<SnoozeStop> {
   bool quizMistake; //クイズを間違えたか
-  bool quizClear; //クイズが正解したか
+  bool quizStart;
   TextEditingController controller;
+  //int quizClearCount;
+  bool quizClear;
+  Timer quizTimer;
+  int _second;
+  String quizStartText;
 
   @override
   void initState() {
     super.initState();
-    quizClear = false;
     quizMistake = false;
     controller = TextEditingController();
+    //quizClearCount = 0;
+    quizClear = false;
+    quizStart = false;
+    _second = 15;
+    quizStartText = 'クイズが開始されます。\n${_second}秒経過するか間違えた回答をすると別の問題に切り替わります。';
+    //表示バグで問題が出ないときがあるので複数問題をいったん除外
+    //\n問題は全部で${appSetting.quizClearCount}問
   }
 
   @override
   void dispose() {
+    quizTimer.cancel();
+    countTimer().cancel();
     super.dispose();
+  }
+
+  Timer countTimer() {
+    return Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer timer) {
+        if (_second < 1) {
+          timer.cancel();
+          setState(() {});
+        } else {
+          _second = _second - 1;
+        }
+      },
+    );
   }
 
   @override
@@ -47,29 +77,72 @@ class _SnoozeStopState extends State<SnoozeStop> {
   }
 
   switchStopSnoozePage() {
-    if (quizClear == false) {
+    if (quizStart == false) {
+      return buildQuizStart();
+    } else if (quizStart && !quizClear) {
+      //} else if (quizStart && quizClearCount < appSetting.quizClearCount) {
       //クイズ画面
-      print('call build quizScreen');
+      _second = 15;
+      quizTimer = countTimer();
       return randomQuizSelect();
+      //} else if (quizClearCount == appSetting.quizClearCount) {
     } else if (quizClear) {
       //スヌーズ解除完了画面
+      quizTimer.cancel();
+      countTimer().cancel();
       return quizClearScreen();
     }
+  }
+
+  buildQuizStart() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        heightSpacer(height: size.height * 0.1),
+        Container(
+          width: size.width,
+          child: Text(
+            '$quizStartText',
+            style: TextStyle(fontSize: 20),
+            softWrap: true,
+          ),
+        ),
+        heightSpacer(height: size.height * 0.1),
+        RaisedButton(
+          onPressed: () {
+            setState(() {
+              quizStart = true;
+            });
+          },
+          child: Text(
+            'スタート',
+            style: TextStyle(fontSize: 20),
+          ),
+        )
+      ],
+    );
   }
 
   //クイズ画面
 
   randomQuizSelect() {
-    var random = new math.Random();
-    int selectedQuiz = random.nextInt(quizType);
+    int selectedQuiz;
+    var random;
+    List<int> randomNum;
+    Map<String, Color> randomColor;
+
+    random = new math.Random();
+    selectedQuiz = random.nextInt(quizType);
 
     switch (selectedQuiz) {
       case 0:
-        List<int> randomNum = randomNumAdd(quizAnserNum);
+        randomNum = randomNumAdd(quizAnserNum);
+
         return buildRandomNumAdd(randomNum);
         break;
       case 1:
-        Map<String, Color> randomColor = randomColorSelsect(quizAnserNum);
+        randomColor = randomColorSelsect(quizAnserNum);
         Color trueColor;
         var values = randomColor.keys.toList();
         var element = values[random.nextInt(values.length)];
@@ -114,9 +187,23 @@ class _SnoozeStopState extends State<SnoozeStop> {
 //乱数の足し算の画面
   buildRandomNumAdd(List<int> randomNumQuiz) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        /*
+        //残り問題数表示
+        Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'あと${(appSetting.quizClearCount - quizClearCount)}問',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              widthSpacer(width: size.width * 0.1),
+            ]),
+            */
+        heightSpacer(height: size.height * 0.05),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,9 +250,12 @@ class _SnoozeStopState extends State<SnoozeStop> {
         heightSpacer(height: size.height * 0.05),
         RaisedButton(
           onPressed: () {
-            if (int.parse(controller.text) == randomNumQuiz[5]) {
+            if (int.parse(controller.text) == randomNumQuiz[quizAnserNum]) {
               setState(() {
+                quizTimer.cancel();
                 quizClear = true;
+                //quizClearCount += 1;
+                quizMistake = false;
               });
             } else {
               setState(() {
@@ -189,7 +279,21 @@ class _SnoozeStopState extends State<SnoozeStop> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          heightSpacer(height: size.height * 0.1),
+          heightSpacer(height: size.height * 0.05),
+          /*
+          Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text('あと${(appSetting.quizClearCount - quizClearCount)}問',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    )),
+                widthSpacer(width: size.width * 0.1),
+              ]),
+              */
+          heightSpacer(height: size.height * 0.05),
           Text(
             'Q.下の四角形の色を答えてください',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -216,7 +320,10 @@ class _SnoozeStopState extends State<SnoozeStop> {
                 onPressed: () {
                   if (randomColor[i] == trueColor) {
                     setState(() {
+                      quizTimer.cancel();
+                      //quizClearCount += 1;
                       quizClear = true;
+                      quizMistake = false;
                     });
                   } else {
                     setState(() {

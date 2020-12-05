@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 int quizType = 2; //クイズの種類の数
 
 int quizAnserNum = 5; //クイズの選択の数
+List<String> quizList = ['乱数足し算', 'ランダムカラー'];
 
 //1~10の乱数の足し算　maxnum=>乱数の数
 List<int> randomNumAdd(int maxnum) {
