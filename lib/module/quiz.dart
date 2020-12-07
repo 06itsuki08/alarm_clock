@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 //memo randomの範囲
 //int next(int min, int max) => min + _random.nextInt(max - min);
 
-int quizType = 3; //クイズの種類の数
+int quizType = 4; //クイズの種類の数
 
 int quizAnserNum = 5; //クイズの選択の数
-List<String> quizList = ['乱数足し算', 'ランダムカラー', 'ランダム文字列'];
+List<String> quizList = ['乱数足し算', 'ランダムカラー', 'ランダム文字列', '画像内の数'];
 
 //1~10の乱数の足し算　maxnum=>乱数の数
 List<int> randomNumAdd(int maxnum) {
@@ -117,4 +117,32 @@ String randomString(int length) {
   return generatedString;
 }
 
-//
+// ImageQuiz
+List<String> imageObjectName = [
+  'りんご',
+  'バナナ',
+  'ぶどう',
+  'もも',
+  'みかん',
+  '英単語',
+  'ひらがな',
+  '英字',
+  'いらすと',
+  '果物の種類'
+];
+List<int> imageObjectNum = [1, 2, 1, 3, 1, 2, 3, 14, 2, 5];
+
+Map<String, List<int>> randomImage(int objectNum) {
+  var random = new math.Random();
+  List<int> ansInt = [];
+  String ansString;
+  int ran = random.nextInt(imageObjectName.length);
+  ansString = imageObjectName[ran];
+  ansInt.add(imageObjectNum[ran]);
+  for (int i = 0; i < objectNum - 1; i++) {
+    ran = random.nextInt(imageObjectName.length);
+    ansInt.add(imageObjectNum[ran]);
+  }
+  Map<String, List<int>> imageObjectAnser = {ansString: ansInt};
+  return imageObjectAnser;
+}

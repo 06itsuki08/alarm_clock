@@ -38,7 +38,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
 
   @override
   void dispose() {
-    quizTimer.cancel();
+    if (quizTimer.isActive) quizTimer.cancel();
     countTimer().cancel();
     super.dispose();
   }
@@ -49,7 +49,9 @@ class _SnoozeStopState extends State<SnoozeStop> {
       (Timer timer) {
         if (_second < 1) {
           timer.cancel();
-          setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
         } else {
           _second = _second - 1;
         }
@@ -73,7 +75,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
                 fit: BoxFit.fill,
               ),
             ),
-            child: switchStopSnoozePage()));
+            child: SingleChildScrollView(child: switchStopSnoozePage())));
   }
 
   switchStopSnoozePage() {
@@ -83,6 +85,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
       //} else if (quizStart && quizClearCount < appSetting.quizClearCount) {
       //クイズ画面
       _second = 15;
+
       quizTimer = countTimer();
       return randomQuizSelect();
       //} else if (quizClearCount == appSetting.quizClearCount) {
@@ -157,6 +160,10 @@ class _SnoozeStopState extends State<SnoozeStop> {
       case 2:
         ranString = randomString(5);
         return buildRandomString(ranString);
+        break;
+      case 3:
+        Map<String, List<int>> ranImageObject = randomImage(quizAnserNum);
+        return buildRandomImageObject(ranImageObject);
         break;
       default:
         print('問題生成エラーが発生しました');
@@ -264,7 +271,6 @@ class _SnoozeStopState extends State<SnoozeStop> {
           onPressed: () {
             if (int.parse(controller.text) == randomNumQuiz[quizAnserNum]) {
               setState(() {
-                quizTimer.cancel();
                 quizClear = true;
                 //quizClearCount += 1;
                 quizMistake = false;
@@ -305,16 +311,15 @@ class _SnoozeStopState extends State<SnoozeStop> {
                 widthSpacer(width: size.width * 0.1),
               ]),
               */
-          heightSpacer(height: size.height * 0.05),
           Text(
-            'Q.下の四角形の色を答えてください',
+            'Q.下の四角形の中の色を答えてください',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           heightSpacer(height: size.height * 0.05),
           //色の枠
           SizedBox(
-            width: 100,
-            height: 100,
+            width: size.width * 0.4,
+            height: size.width * 0.4,
             child: Container(
               decoration: BoxDecoration(color: trueColor),
             ),
@@ -333,12 +338,15 @@ class _SnoozeStopState extends State<SnoozeStop> {
                   if (randomColor[i] == trueColor) {
                     setState(() {
                       quizTimer.cancel();
+                      countTimer().cancel();
                       //quizClearCount += 1;
                       quizClear = true;
                       quizMistake = false;
                     });
                   } else {
                     setState(() {
+                      quizTimer.cancel();
+                      countTimer().cancel();
                       quizMistake = true;
                     });
                   }
@@ -356,7 +364,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        heightSpacer(height: size.height * 0.1),
+        heightSpacer(height: size.height * 0.05),
         Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -403,12 +411,15 @@ class _SnoozeStopState extends State<SnoozeStop> {
             if (controller.text == randomString) {
               setState(() {
                 quizTimer.cancel();
+                countTimer().cancel();
                 quizClear = true;
                 //quizClearCount += 1;
                 quizMistake = false;
               });
             } else {
               setState(() {
+                quizTimer.cancel();
+                countTimer().cancel();
                 quizMistake = true;
               });
             }
@@ -417,5 +428,66 @@ class _SnoozeStopState extends State<SnoozeStop> {
         ),
       ],
     );
+  }
+
+  //画像内の数を答えるやつ
+  buildRandomImageObject(Map<String, List<int>> answer) {
+    List<int> selectAnswer = answer.values.first;
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          heightSpacer(height: size.height * 0.05),
+          Text(
+            'Q.下の画像の「${answer.keys.first}」はいくつ？',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          heightSpacer(height: size.height * 0.05),
+          //画像
+          SizedBox(
+            width: size.width / 2,
+            height: size.width / 2,
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/imageQuiz.png"),
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ),
+          ),
+          heightSpacer(height: size.height * 0.05),
+          if (quizMistake)
+            Text(
+              '不正解',
+              style: TextStyle(color: Colors.red, fontSize: 18),
+            ),
+          for (int i = 0; i < selectAnswer.length; i++)
+            SizedBox(
+              width: size.width * 0.5,
+              child: RaisedButton(
+                onPressed: () {
+                  if (selectAnswer[i] == selectAnswer[0]) {
+                    setState(() {
+                      quizTimer.cancel();
+                      countTimer().cancel();
+                      quizTimer.cancel();
+                      //quizClearCount += 1;
+                      quizClear = true;
+                      quizMistake = false;
+                    });
+                  } else {
+                    setState(() {
+                      quizTimer.cancel();
+                      countTimer().cancel();
+                      quizMistake = true;
+                    });
+                  }
+                },
+                child:
+                    Text('${selectAnswer[i]}', style: TextStyle(fontSize: 20)),
+              ),
+            ),
+        ]);
   }
 }
