@@ -71,17 +71,23 @@ class _AlarmStopState extends State<AlarmStop> {
   switchStopPage() {
     //５回ボタンを押すまではボタンを押す画面
     if (stopCount < 5) {
+      print('5回ボタン表示');
       return alarmMode();
     } else if (alarm.qrCodeMode && pushQRQuiz && qrCodeFin == false) {
       //QRコードが読み超えないときに代わりに問題を解く
+
+      print('QRコード失敗の問題表示');
       return falseQRCode();
     } else if (alarm.qrCodeMode && qrCodeFin == false) {
       //５回ボタンを押した後でアラームがQRコードモードをオンにしている場合
+
+      print('ＱＲコード読み込み画面表示');
       return alarmStopOnQRCode();
     } else {
       //５回ボタンを押して、ＱＲコードモードがオフ若しくは、QRコードを読み終えた（クイズを解いた）
       qrCodeFin = true;
       checkAlarmRing();
+      print("アラーム停止画面表示");
       return quizStart();
     }
   }
@@ -90,6 +96,7 @@ class _AlarmStopState extends State<AlarmStop> {
     //アラームが動作（鳴って）している場合
     if (moveAlarm) {
       //アラーム音を停止させる
+      print('アラーム音停止呼び出し');
       final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
       List<dynamic> list = [alarmedId, false];
       send?.send(list);
@@ -97,6 +104,7 @@ class _AlarmStopState extends State<AlarmStop> {
       //アラームを停止(音止めた)させた
       if (qrCodeFin == true) {
         //10分スヌーズを起動する
+        print('スヌーズ設定呼び出し');
         await setAlarm10minSnooze();
         setState(() {
           moveAlarm = false;

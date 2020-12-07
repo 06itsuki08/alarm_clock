@@ -16,7 +16,7 @@ final String alartDeleteAlarm = "このアラームを削除します";
 final String cansel = "cansel";
 final String ok = "ok";
 final String delete = "delete";
-final String qrcodeText = 'Nekonokai';
+final String qrcodeText = 'Nekonokai'; //QRコード内の文字列
 final tz.TZDateTime initDateTime = tz.TZDateTime(tz.local, 2020, 1, 1, 0, 0);
 Size size;
 bool moveAlarm;

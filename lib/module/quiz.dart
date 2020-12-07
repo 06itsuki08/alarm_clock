@@ -14,6 +14,7 @@ List<String> quizList = ['乱数足し算', 'ランダムカラー', 'ランダ�
 
 //1~10の乱数の足し算　maxnum=>乱数の数
 List<int> randomNumAdd(int maxnum) {
+  print('----------------乱数足し算問題作成終了--------------');
   List<int> nums = new List<int>();
   int add = 0;
   var random = new math.Random();
@@ -24,14 +25,15 @@ List<int> randomNumAdd(int maxnum) {
     add += l;
   }
   nums.add(add);
+  print('----------------乱数足し算問題作成終了--------------');
   return nums;
 }
 
 final List<Color> colorList = <Color>[
-  Colors.pink[500],
+  Colors.pink[200],
   Colors.red[500],
   Colors.deepOrange[500],
-  Colors.orange[500],
+  Colors.orange[600],
   Colors.amber[500],
   Colors.yellow[500],
   Colors.lime[500],
@@ -108,12 +110,15 @@ String randomChar =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
 int randomCharlength = randomChar.length;
 String randomString(int length) {
+  print('----------------ランダム文字列生成開始--------------');
   var random = new math.Random();
   String generatedString = '';
   for (int i = 0; i < length; i++) {
     int l = random.nextInt(randomCharlength);
     generatedString += randomChar[l];
   }
+
+  print('----------------ランダム文字列生成終了--------------');
   return generatedString;
 }
 
@@ -133,6 +138,7 @@ List<String> imageObjectName = [
 List<int> imageObjectNum = [1, 2, 1, 3, 1, 2, 3, 14, 2, 5];
 
 Map<String, List<int>> randomImage(int objectNum) {
+  print('----------------ランダム画像問題作成開始--------------');
   var random = new math.Random();
   List<int> ansInt = [];
   String ansString;
@@ -144,5 +150,7 @@ Map<String, List<int>> randomImage(int objectNum) {
     ansInt.add(imageObjectNum[ran]);
   }
   Map<String, List<int>> imageObjectAnser = {ansString: ansInt};
+
+  print('----------------ランダム画像問題作成終了--------------');
   return imageObjectAnser;
 }

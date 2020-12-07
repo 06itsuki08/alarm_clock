@@ -16,26 +16,34 @@ List<Alarm> alarmList;
 
 void addAlarm(Alarm alarm) {
   alarmList.add(alarm);
+  print('アラーム追加完了');
 }
 
 //まだ実装中
 void updateAlarm(Alarm alarm, int i) {
+  print('----------------アラームアップデート開始--------------');
   alarmList[i] = alarm;
   //Todo:通知類の再登録を実装
   deleteAlarmData();
   saveAlarmData(alarmList);
+
+  print('----------------アラームアップデート終了--------------');
 }
 
 void relodeAlarmList() async {
+  print('----------------アラームリロード開始--------------');
   //アラームリストを全消し
   alarmList.clear();
   //端末に保存してあるアラームリストを読み込み
   List<Alarm> list = await loadAlarmData(needReturn: true);
   alarmList = list;
   print('reloadfin alarmList Item num is ${alarmList.length}');
+
+  print('----------------アラームリロード終了--------------');
 }
 
 Future<Alarm> getAlarm() async {
+  print('----------------アラーム取得開始--------------');
   int i = 0;
   Alarm alarm;
   List<Alarm> _alarmlist = await loadAlarmData(needReturn: true);
@@ -48,8 +56,10 @@ Future<Alarm> getAlarm() async {
       break;
     }
   }
+
   if (i < _alarmlist.length) {
     alarm = _alarmlist[i];
+    print('----------------アラーム取得完了--------------');
     return alarm;
   } else {
     List<int> list = [];
@@ -62,24 +72,33 @@ Future<Alarm> getAlarm() async {
         vibration: true,
         qrCodeMode: true,
         stopSnooze: false);
+
+    print('----------------アラーム取得失敗・仮アラーム返却完了--------------');
     return alarm;
   }
 }
 
 Future<void> deleteAlarm(Alarm alarm) async {
+  print('----------------アラーム削除開始--------------');
+
   //バックグラウンド処理の予定のキャンセル
   Workmanager.cancelByUniqueName(alarm.alarmId.toString());
   Workmanager.cancelByUniqueName((alarm.alarmId + 1).toString());
+  print('-----バックグラウンド処理解除--------');
+
   //アラームの通知を解除
   canselAlarm(alarm.alarmId);
   canselAlarm(alarm.alarmId + 1);
+  print('-----通知解除--------');
+
   //アラームリストからアラームを除外
   alarmList.remove(alarm);
   //端末に書き込んだ削除前のアラームリストを一回消去
   deleteAlarmData();
   //アラームを除外されたアラームリストを書き込み
   saveAlarmData(alarmList);
-
+  print('-----アラームリストから削除--------');
+  print('-----最新アラーム情報更新開始--------');
   final List<PendingNotificationRequest> pendingNotificationRequests =
       await flutterLocalNotificationsPlugin.pendingNotificationRequests();
   if (pendingNotificationRequests.isEmpty ||
@@ -102,9 +121,11 @@ Future<void> deleteAlarm(Alarm alarm) async {
       }
     });
   }
-
   deleteSettingData();
   saveSettingData(appSetting);
+  print('-----最新アラーム情報更新完了--------');
+
+  print('----------------アラーム削除完了--------------');
 }
 
 buildListItem(Alarm alarm) {
