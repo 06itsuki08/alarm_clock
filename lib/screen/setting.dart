@@ -98,10 +98,10 @@ class _SettingState extends State<Setting> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
               ),
-              heightSpacer(height: size.height * 0.05),
+              /*heightSpacer(height: size.height * 0.05),
               Text('スヌーズ解除時のクイズの種類',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              buildQuizCheckBox(),
+              buildQuizCheckBox(),*/
             ],
           ),
         ),
@@ -127,6 +127,7 @@ class _SettingState extends State<Setting> {
       */
   }
 
+/*
   buildQuizCheckBox() {
     return Column(
       children: [
@@ -156,4 +157,5 @@ class _SettingState extends State<Setting> {
       ],
     );
   }
+  */
 }
