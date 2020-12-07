@@ -131,6 +131,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
     var random;
     List<int> randomNum;
     Map<String, Color> randomColor;
+    String ranString;
 
     random = new math.Random();
     selectedQuiz = random.nextInt(quizType);
@@ -148,6 +149,13 @@ class _SnoozeStopState extends State<SnoozeStop> {
         var element = values[random.nextInt(values.length)];
         trueColor = randomColor['$element'];
         return buildRandomColorSelect(randomColor, trueColor);
+        break;
+      case 2:
+        ranString = randomString(5);
+        return buildRandomString(ranString);
+        break;
+      default:
+        print('問題生成エラーが発生しました');
         break;
     }
   }
@@ -336,5 +344,74 @@ class _SnoozeStopState extends State<SnoozeStop> {
               ),
             ),
         ]);
+  }
+
+  //ランダム文字列
+  buildRandomString(String randomString) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        heightSpacer(height: size.height * 0.1),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              widthSpacer(width: size.width * 0.05),
+              Expanded(
+                child: Text(
+                  'Q.下に表示されている文字列と同じものを入力して下さい',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              widthSpacer(width: size.width * 0.05),
+            ]),
+        heightSpacer(height: size.height * 0.1),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              '$randomString',
+              style: TextStyle(fontSize: 30),
+            ),
+          ],
+        ),
+        heightSpacer(height: size.height * 0.05),
+        if (quizMistake)
+          Text(
+            '不正解',
+            style: TextStyle(color: Colors.red, fontSize: 18),
+          ),
+        SizedBox(
+          width: size.width * 0.2,
+          child: TextField(
+            enabled: true,
+            controller: controller,
+            cursorColor: Colors.amber,
+            keyboardType: TextInputType.number,
+            maxLines: 1,
+          ),
+        ),
+        heightSpacer(height: size.height * 0.05),
+        RaisedButton(
+          onPressed: () {
+            if (controller.text == randomString) {
+              setState(() {
+                quizTimer.cancel();
+                quizClear = true;
+                //quizClearCount += 1;
+                quizMistake = false;
+              });
+            } else {
+              setState(() {
+                quizMistake = true;
+              });
+            }
+          },
+          child: Text('答え合わせ'),
+        ),
+      ],
+    );
   }
 }

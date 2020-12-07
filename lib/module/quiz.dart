@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 //memo randomの範囲
 //int next(int min, int max) => min + _random.nextInt(max - min);
 
-int quizType = 2; //クイズの種類の数
+int quizType = 3; //クイズの種類の数
 
 int quizAnserNum = 5; //クイズの選択の数
-List<String> quizList = ['乱数足し算', 'ランダムカラー'];
+List<String> quizList = ['乱数足し算', 'ランダムカラー', 'ランダム文字列'];
 
 //1~10の乱数の足し算　maxnum=>乱数の数
 List<int> randomNumAdd(int maxnum) {
@@ -103,6 +103,18 @@ randomColorSelsect(int colorNum) {
   return randomColors;
 }
 
-// Weather
+// RandomString
+String randomChar =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+int randomCharlength = randomChar.length;
+String randomString(int length) {
+  var random = new math.Random();
+  String generatedString = '';
+  for (int i = 0; i < length; i++) {
+    int l = random.nextInt(randomCharlength);
+    generatedString += randomChar[l];
+  }
+  return generatedString;
+}
 
 //
