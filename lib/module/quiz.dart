@@ -106,8 +106,8 @@ randomColorSelsect(int colorNum) {
 }
 
 // RandomString
-String randomChar =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+//初期　文字リスト'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+String randomChar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 int randomCharlength = randomChar.length;
 String randomString(int length) {
   print('----------------ランダム文字列生成開始--------------');

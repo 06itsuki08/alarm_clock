@@ -146,7 +146,6 @@ class _SnoozeStopState extends State<SnoozeStop> {
     switch (selectedQuiz) {
       case 0:
         randomNum = randomNumAdd(quizAnserNum);
-
         return buildRandomNumAdd(randomNum);
         break;
       case 1:
@@ -158,7 +157,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
         return buildRandomColorSelect(randomColor, trueColor);
         break;
       case 2:
-        ranString = randomString(5);
+        ranString = randomString(4);
         return buildRandomString(ranString);
         break;
       case 3:
