@@ -127,7 +127,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
   //クイズ画面
 
   randomQuizSelect() {
-    int selectedQuiz;
+    int selectedQuiz = 0;
     var random;
     List<int> randomNum;
     Map<String, Color> randomColor;
@@ -135,6 +135,10 @@ class _SnoozeStopState extends State<SnoozeStop> {
 
     random = new math.Random();
     selectedQuiz = random.nextInt(quizType);
+    //乱数で選択された問題が設定画面でオンにされているか。違ったら乱数再生成
+    while (appSetting.useQuiz[selectedQuiz] != true) {
+      selectedQuiz = random.nextInt(quizType);
+    }
 
     switch (selectedQuiz) {
       case 0:
