@@ -4,6 +4,7 @@ import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
+import 'package:alarm_clock/screen/home.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ import 'package:workmanager/workmanager.dart';
 int alarmedId;
 FlutterRingtonePlayer ringtonePlayer = FlutterRingtonePlayer();
 Vibration vibration = Vibration();
+IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails(
+    presentAlert: true, presentBadge: true, presentSound: true);
 
 //バックグラウンド処理の予約をする
 setBackgroundTimer(tz.TZDateTime time) {
@@ -53,18 +56,19 @@ setAlarmOnceSchedule(Alarm alarm) async {
       scheduledDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
-        'Alarm',
-        'Alarm',
-        '卒研猫の会のアラーム',
-        ledColor: Colors.amber,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        priority: Priority.max,
-        importance: Importance.max,
-        channelShowBadge: true,
-        visibility: NotificationVisibility.public,
-        category: 'alarm',
-      )),
+            'Alarm',
+            'Alarm',
+            '卒研猫の会のアラーム',
+            ledColor: Colors.amber,
+            ledOnMs: 1000,
+            ledOffMs: 500,
+            priority: Priority.max,
+            importance: Importance.max,
+            channelShowBadge: true,
+            visibility: NotificationVisibility.public,
+            category: 'alarm',
+          ),
+          iOS: iosNotificationDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
@@ -101,18 +105,19 @@ setAlarmWeeklySchedule(Alarm alarm) async {
       _nextInstanceWeek(alarm),
       NotificationDetails(
           android: AndroidNotificationDetails(
-        'Alarm',
-        'Alarm',
-        '卒研猫の会のアラーム',
-        ledColor: Colors.amber,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        priority: Priority.max,
-        importance: Importance.max,
-        channelShowBadge: true,
-        visibility: NotificationVisibility.public,
-        category: 'alarm',
-      )),
+            'Alarm',
+            'Alarm',
+            '卒研猫の会のアラーム',
+            ledColor: Colors.amber,
+            ledOnMs: 1000,
+            ledOffMs: 500,
+            priority: Priority.max,
+            importance: Importance.max,
+            channelShowBadge: true,
+            visibility: NotificationVisibility.public,
+            category: 'alarm',
+          ),
+          iOS: iosNotificationDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
@@ -149,18 +154,19 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
       scheduledDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
-        'Alarm',
-        'Alarm',
-        '卒研猫の会のアラーム',
-        ledColor: Colors.amber,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        priority: Priority.max,
-        importance: Importance.max,
-        channelShowBadge: true,
-        visibility: NotificationVisibility.public,
-        category: 'alarm',
-      )),
+            'Alarm',
+            'Alarm',
+            '卒研猫の会のアラーム',
+            ledColor: Colors.amber,
+            ledOnMs: 1000,
+            ledOffMs: 500,
+            priority: Priority.max,
+            importance: Importance.max,
+            channelShowBadge: true,
+            visibility: NotificationVisibility.public,
+            category: 'alarm',
+          ),
+          iOS: iosNotificationDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
@@ -242,30 +248,24 @@ canselAllAlarm() async {
   await flutterLocalNotificationsPlugin.cancelAll();
 }
 
-//ここが動作しているのを見たことがない
+// iOSでのフォアグランドでの動作
 Future onDidReceiveLocalNotification(
     int id, String title, String body, String payload) async {
   // display a dialog with the notification details, tap ok to go to another page
   BuildContext context;
   Alarm alarm = await getAlarm();
-  alarmedId = appSetting.movingAlarmId;
+  startRingAlarm();
   showDialog(
     context: context,
     builder: (BuildContext context) => CupertinoAlertDialog(
-      title: Text(title),
-      content: Text(body),
+      title: Text(alarm.description),
+      content: Text('${alarm.description}の時間になりました'),
       actions: [
         CupertinoDialogAction(
           isDefaultAction: true,
-          child: Text('アラームの時間になりました'),
-          onPressed: () async {
-            Navigator.of(context, rootNavigator: true).pop();
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AlarmStop(),
-              ),
-            );
+          child: Text('アラームを停止する'),
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
           },
         )
       ],
@@ -371,6 +371,7 @@ startRingAlarm({bool vibrate = true}) async {
   if (vibrate) {
     Vibration.vibrate(pattern: [500, 500, 500, 500], repeat: 2);
   }
+  //Androidのみ
   FlutterRingtonePlayer.playAlarm(
       looping: true, asAlarm: true, volume: appSetting.volume);
 }
