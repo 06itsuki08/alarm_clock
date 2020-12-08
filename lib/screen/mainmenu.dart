@@ -119,13 +119,13 @@ class _MainMenuState extends State<MainMenu> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            /*クイズ検証用ショトカ*/
+                            /*クイズ検証用ショトカ
                             RaisedButton(
                               child: Text('QuizTest'),
                               onPressed: () {
                                 Navigator.pushNamed(context, '/snoozestop');
                               },
-                            ), //*/
+                            ), */
                             heightSpacer(height: size.height * 0.01),
                             Container(
                               color: Colors.white.withOpacity(0.5),
@@ -141,19 +141,7 @@ class _MainMenuState extends State<MainMenu> {
                               ),
                             ),
                             heightSpacer(height: size.height * 0.01),
-                            Container(
-                              color: Colors.white.withOpacity(0.5),
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                child: Text(
-                                  'アラームを長押しで削除',
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontFamily: 'MPLUSRounded',
-                                  ),
-                                ),
-                              ),
-                            ),
+
                             //アラームのリストを表示する。
                             //表示させるリストの項目は'alarmlist.dart'にある'buildListItem'にある
                             ListView.builder(

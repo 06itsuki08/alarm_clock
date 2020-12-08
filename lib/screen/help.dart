@@ -108,6 +108,17 @@ class HelpHome extends StatelessWidget {
                           )),
                     ],
                   ),
+                  heightSpacer(height: size.height * 0.025),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('アラームを長押しすると削除することができます。',
+                          style: TextStyle(
+                            fontSize: 16,
+                          )),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -213,6 +224,62 @@ class HelpHome extends StatelessWidget {
                         ],
                       ),
                     ])))),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.7),
+          ),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: Text(
+              'クレジット',
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.7),
+                ),
+                child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    child: Column(children: [
+                      Text(
+                        '製作',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text('猫の会', style: TextStyle(fontSize: 18)),
+                      Text('岩尾 実柚紀 志和 樹 櫻井 千晶',
+                          style: TextStyle(
+                            fontSize: 16,
+                          )),
+                      heightSpacer(height: size.height * 0.01),
+                      Text(
+                        'フォント',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      Text(
+                          'MPLUSRounded1c\nきろ字(kilo)\nRounded-X Mgen+ 1c black\n游ゴシック Regular',
+                          style: TextStyle(
+                            fontSize: 16,
+                          )),
+                      heightSpacer(height: size.height * 0.01),
+                      Text(
+                        'クイズイラスト',
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      Text('いらすとや',
+                          style: TextStyle(
+                            fontSize: 16,
+                          )),
+                    ]))))
       ],
     );
   }
