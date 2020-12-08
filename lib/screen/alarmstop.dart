@@ -225,7 +225,7 @@ class _AlarmStopState extends State<AlarmStop> {
 
   getQRCode() async {
     String scanResult = '';
-    checkAlarmRing();
+    //
     ScanResult result;
     try {
       result = await BarcodeScanner.scan();
@@ -246,6 +246,7 @@ class _AlarmStopState extends State<AlarmStop> {
 
     if (scanResult == qrcodeText) {
       print('QRコードが一致しました');
+      checkAlarmRing();
       setState(() {
         qrCodeFin = true;
       });
@@ -310,6 +311,7 @@ class _AlarmStopState extends State<AlarmStop> {
         RaisedButton(
           onPressed: () {
             if (int.parse(textCtrl.text) == numQuiz[3]) {
+              checkAlarmRing();
               setState(() {
                 qrCodeFin = true;
                 quizIncorrectAnswer = false;
