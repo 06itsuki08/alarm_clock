@@ -5,7 +5,6 @@ class Alarm {
   int alarmId;
   TimeOfDay time;
   String description = '未登録';
-  //String soundPath; Path取得未実装
   List<int> repeat;
   bool vibration;
   bool qrCodeMode;

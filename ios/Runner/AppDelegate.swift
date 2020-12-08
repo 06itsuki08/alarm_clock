@@ -8,14 +8,8 @@ import Flutter
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
+    UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
-  if (@available(iOS 10.0, *)) {
-  [UNUserNotificationCenter currentNotificationCenter].delegate = (id<UNUserNotificationCenterDelegate>) self;
-}
 
-if(![[NSUserDefaults standardUserDefaults]objectForKey:@"Notification"]){
-    [[UIApplication sharedApplication] cancelAllLocalNotifications];
-    [[NSUserDefaults standardUserDefaults]setBool:YES forKey:@"Notification"];
-}
 }

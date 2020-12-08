@@ -18,13 +18,21 @@ class Setting extends StatefulWidget {
 class _SettingState extends State<Setting> {
   double value = 0.0;
   List<bool> isSelected = [];
+  bool quizChecker;
 
   @override
   void initState() {
     super.initState();
     value = appSetting.volume;
+    quizChecker = true;
+    //クイズの選択を読み込み
     for (int i = 0; i < quizList.length; i++) {
       isSelected.add(appSetting.useQuiz[i]);
+    }
+    //クイズがどれも選択されてなかったら成りたたないので無理や乱数足し算をオンにしておく
+    int checkedQuizOn = checkQuizCheckBox();
+    if (checkedQuizOn < 1) {
+      isSelected[0] = true;
     }
   }
 
@@ -32,6 +40,16 @@ class _SettingState extends State<Setting> {
   void dispose() {
     stopRingAlarm();
     super.dispose();
+  }
+
+  checkQuizCheckBox() {
+    int flg = 0;
+    isSelected.forEach((element) {
+      if (element) {
+        flg++;
+      }
+    });
+    return flg;
   }
 
   @override
@@ -101,6 +119,12 @@ class _SettingState extends State<Setting> {
               heightSpacer(height: size.height * 0.05),
               Text('スヌーズ解除時のクイズの種類',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              if (quizChecker == false)
+                Text('クイズは1つ以上ONにしてください',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red)),
               buildQuizCheckBox(),
             ],
           ),
@@ -142,13 +166,23 @@ class _SettingState extends State<Setting> {
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
                 value: isSelected[i],
-                onChanged: (bool value) {
+                onChanged: (bool value) async {
+                  isSelected[i] = value;
+
+                  int flg = await checkQuizCheckBox();
                   setState(
                     () {
-                      isSelected[i] = value;
-                      appSetting.useQuiz[i] = isSelected[i];
-                      deleteSettingData();
-                      saveSettingData(appSetting);
+                      //2つ以上オンならオフにしてもOK
+                      if (flg >= 1) {
+                        appSetting.useQuiz[i] = isSelected[i];
+                        deleteSettingData();
+                        saveSettingData(appSetting);
+                        quizChecker = true;
+                      } //1つしかオンじゃなければオフにさせない
+                      else {
+                        isSelected[i] = !value;
+                        quizChecker = false;
+                      }
                     },
                   );
                 }),

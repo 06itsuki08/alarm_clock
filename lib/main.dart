@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
@@ -20,6 +22,8 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:workmanager/workmanager.dart';
 import 'dart:isolate';
+
+import 'module/alarm.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -75,7 +79,14 @@ Future<void> main() async {
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
     moveAlarm = true;
-    print('called onSelectNotification');
+    if (moveAlarm != true) moveAlarm = true;
+    loadSettingData();
+    Alarm alarm = await getAlarm();
+    final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
+    List<dynamic> list = [appSetting.movingAlarmId, alarm.vibration];
+    send?.send(list);
+    BuildContext context;
+    Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
   });
 
   tz.initializeTimeZones();
@@ -113,7 +124,7 @@ class MyApp extends StatelessWidget {
 }
 
 //バックグラウンドでの処理主にサイレントマナーモードでの通知音・バイブ用
-void callbackDispatcher() {
+void callbackDispatcher() async {
   Workmanager.executeTask((taskName, inputData) async {
     switch (taskName) {
       case Workmanager.iOSBackgroundTask:

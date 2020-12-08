@@ -4,6 +4,7 @@ import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
+import 'package:alarm_clock/screen/home.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +18,12 @@ import 'package:workmanager/workmanager.dart';
 int alarmedId;
 FlutterRingtonePlayer ringtonePlayer = FlutterRingtonePlayer();
 Vibration vibration = Vibration();
+IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails(
+    presentAlert: true, presentBadge: true, presentSound: true);
 
 //バックグラウンド処理の予約をする
 setBackgroundTimer(tz.TZDateTime time) {
+  print('------バックグラウンドタイマー時間取得-----');
   DateTime now = DateTime.now();
   //バックグラウンド処理の開始までラグがあるときがあるので要調整
   //現在時間と登録された時間までを引いた時間を指定する（Durationじゃないといけないのがやっかい）
@@ -30,6 +34,7 @@ setBackgroundTimer(tz.TZDateTime time) {
 
 //アラームに曜日のくり返しが無い場合は直近のその時間に鳴らす（当日か翌日に鳴る）
 setAlarmOnceSchedule(Alarm alarm) async {
+  print('----------------バックグラウンド処理登録開始--------------');
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
       tag: 'alarm',
       initialDelay: setBackgroundTimer(_nextInstanceTime(alarm)),
@@ -40,6 +45,9 @@ setAlarmOnceSchedule(Alarm alarm) async {
         'minute': alarm.time.minute
       });
 
+  print('----------------バックグラウンド処理登録完了--------------');
+
+  print('----------------通知登録開始--------------');
   tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
@@ -48,29 +56,34 @@ setAlarmOnceSchedule(Alarm alarm) async {
       scheduledDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
-        'Alarm',
-        'Alarm',
-        '卒研猫の会のアラーム',
-        ledColor: Colors.amber,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        priority: Priority.max,
-        importance: Importance.max,
-        channelShowBadge: true,
-        visibility: NotificationVisibility.public,
-        category: 'alarm',
-      )),
+            'Alarm',
+            'Alarm',
+            '卒研猫の会のアラーム',
+            ledColor: Colors.amber,
+            ledOnMs: 1000,
+            ledOffMs: 500,
+            priority: Priority.max,
+            importance: Importance.max,
+            channelShowBadge: true,
+            visibility: NotificationVisibility.public,
+            category: 'alarm',
+          ),
+          iOS: iosNotificationDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: '$scheduledDate');
+
+  print('----------------通知登録完了--------------');
   setSettingAlarmId(alarm, _nextInstanceTime(alarm));
 }
 
 //アラームに曜日のくり返しがある場合に使う
 setAlarmWeeklySchedule(Alarm alarm) async {
-  print('曜日登録開始');
+  print('曜日アラーム登録開始');
+
+  print('----------------バックグラウンド処理登録開始--------------');
   tz.TZDateTime scheduledDate = _nextInstanceWeek(alarm);
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
       tag: 'alarm',
@@ -81,8 +94,10 @@ setAlarmWeeklySchedule(Alarm alarm) async {
         'hour': alarm.time.hour,
         'minute': alarm.time.minute
       });
-  print('バックグランド登録完了');
 
+  print('----------------バックグラウンド処理登録完了--------------');
+
+  print('----------------通知登録開始--------------');
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
       '${alarm.description}',
@@ -90,29 +105,35 @@ setAlarmWeeklySchedule(Alarm alarm) async {
       _nextInstanceWeek(alarm),
       NotificationDetails(
           android: AndroidNotificationDetails(
-        'Alarm',
-        'Alarm',
-        '卒研猫の会のアラーム',
-        ledColor: Colors.amber,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        priority: Priority.max,
-        importance: Importance.max,
-        channelShowBadge: true,
-        visibility: NotificationVisibility.public,
-        category: 'alarm',
-      )),
+            'Alarm',
+            'Alarm',
+            '卒研猫の会のアラーム',
+            ledColor: Colors.amber,
+            ledOnMs: 1000,
+            ledOffMs: 500,
+            priority: Priority.max,
+            importance: Importance.max,
+            channelShowBadge: true,
+            visibility: NotificationVisibility.public,
+            category: 'alarm',
+          ),
+          iOS: iosNotificationDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: '$scheduledDate');
+
+  print('----------------通知登録完了--------------');
   setSettingAlarmId(alarm, _nextInstanceWeek(alarm));
-  print('通知登録完了');
+  print('曜日アラーム登録完了');
 }
 
 //SnoozeのIDは元のAlarmIDに+1している
 setAlarm10minSnoozeSchedule(Alarm alarm) async {
+  print('スヌーズアラーム登録開始');
+
+  print('----------------バックグラウンド処理登録開始--------------');
   tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'snooze',
       tag: 'snooze',
@@ -124,6 +145,8 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
         'minute': alarm.time.minute
       });
 
+  print('----------------バックグラウンド処理登録完了--------------');
+  print('----------------通知登録開始--------------');
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
       '${alarm.description}',
@@ -131,30 +154,32 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
       scheduledDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
-        'Alarm',
-        'Alarm',
-        '卒研猫の会のアラーム',
-        ledColor: Colors.amber,
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        priority: Priority.max,
-        importance: Importance.max,
-        channelShowBadge: true,
-        visibility: NotificationVisibility.public,
-        category: 'alarm',
-      )),
+            'Alarm',
+            'Alarm',
+            '卒研猫の会のアラーム',
+            ledColor: Colors.amber,
+            ledOnMs: 1000,
+            ledOffMs: 500,
+            priority: Priority.max,
+            importance: Importance.max,
+            channelShowBadge: true,
+            visibility: NotificationVisibility.public,
+            category: 'alarm',
+          ),
+          iOS: iosNotificationDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
       payload: '$scheduledDate');
-  print('scheduled notification ID : ${alarm.alarmId}');
 
+  print('----------------通知登録完了--------------');
   setSettingAlarmId(alarm, _nextInstanceTime(alarm));
 }
 
 //現在が、目的の時間より前か
 tz.TZDateTime _nextInstanceTime(Alarm alarm) {
+  print('アラームの直近の時間取得開始');
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
   tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month,
       now.day, alarm.time.hour, alarm.time.minute);
@@ -163,14 +188,16 @@ tz.TZDateTime _nextInstanceTime(Alarm alarm) {
   if (scheduledDate.isBefore(now)) {
     scheduledDate = scheduledDate.add(const Duration(days: 1));
   }
-
+  print('予定時刻:$scheduledDate');
+  print('アラームの直近の時間取得完了');
   return scheduledDate;
 }
 
 //現在が、目的の曜日であるか
 tz.TZDateTime _nextInstanceWeek(Alarm alarm) {
+  print('アラームの直近の曜日取得開始');
   tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
-  print('予定時刻:$scheduledDate');
+
   //当日とアラームの曜日リストが一致しても鳴らす時間が過ぎていれば翌日の曜日になっている
   //nowは意味としては違うけど適当なのが思いつかなかったので保留
   int nowWeekDay = scheduledDate.weekday;
@@ -184,8 +211,6 @@ tz.TZDateTime _nextInstanceWeek(Alarm alarm) {
       break;
     }
   }
-
-  print('リスト内一致検証の動作後：$i');
 
   //アラームの曜日リストが一致しないでforが終わった場合の処理
 
@@ -209,6 +234,9 @@ tz.TZDateTime _nextInstanceWeek(Alarm alarm) {
   while (scheduledDate.weekday != setWeekday) {
     scheduledDate = scheduledDate.add(const Duration(days: 1));
   }
+
+  print('予定時刻:$scheduledDate');
+  print('アラームの直近の曜日取得完了');
   return scheduledDate;
 }
 
@@ -220,30 +248,24 @@ canselAllAlarm() async {
   await flutterLocalNotificationsPlugin.cancelAll();
 }
 
-//ここが動作しているのを見たことがない
+// iOSでのフォアグランドでの動作
 Future onDidReceiveLocalNotification(
     int id, String title, String body, String payload) async {
   // display a dialog with the notification details, tap ok to go to another page
   BuildContext context;
   Alarm alarm = await getAlarm();
-  alarmedId = appSetting.movingAlarmId;
+  startRingAlarm();
   showDialog(
     context: context,
     builder: (BuildContext context) => CupertinoAlertDialog(
-      title: Text(title),
-      content: Text(body),
+      title: Text(alarm.description),
+      content: Text('${alarm.description}の時間になりました'),
       actions: [
         CupertinoDialogAction(
           isDefaultAction: true,
-          child: Text('アラームの時間になりました'),
-          onPressed: () async {
-            Navigator.of(context, rootNavigator: true).pop();
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AlarmStop(),
-              ),
-            );
+          child: Text('アラームを停止する'),
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
           },
         )
       ],
@@ -253,8 +275,9 @@ Future onDidReceiveLocalNotification(
 
 //
 setAlarm10minSnooze() async {
+  print('スヌーズ登録処理開始');
   Alarm alarm = await getAlarm();
-  print('スヌーズの登録');
+
   print('元のアラーム【${alarm.alarmId}】${alarm.description}');
   if (alarm.stopSnooze == false) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
@@ -280,9 +303,12 @@ setAlarm10minSnooze() async {
     print('set snooze at ${time.hour} : ${time.minute}');
     alarmedId = alarm.alarmId;
   }
+
+  print('スヌーズ登録処理完了');
 }
 
 stopAlarm10minSnooze() async {
+  print('スヌーズ解除処理開始');
   Alarm alarm = await getAlarm();
   int id = alarm.alarmId + 1;
   //スヌーズ用の通知とバックグラウンド処理をキャンセル
@@ -294,7 +320,7 @@ stopAlarm10minSnooze() async {
   //alarmListと端末からも消える　ホーム画面でも消える
   if (alarm.repeat.length == 0) {
     deleteAlarm(alarm);
-    print('delete alarm');
+    print('くり返しのないアラームの削除完了');
   } else {
     //曜日のくり返しが登録されているアラームである場合
     //アラームの中のスヌーズ解除チェック用変数を更新
@@ -308,10 +334,10 @@ stopAlarm10minSnooze() async {
     //端末内のアラームリストを一度消し、チェック用変数が更新されたもので保存しなおす
     await deleteAlarmData();
     await saveAlarmData(alarmList);
-    print('set weekly alarm');
+    print('くり返しのあるアラームの再設定完了');
   }
 
-  print('stop snooze');
+  print('スヌーズ解除処理完了');
 }
 
 setSettingAlarmId(Alarm alarm, tz.TZDateTime scheduledDate) async {
@@ -329,7 +355,7 @@ setSettingAlarmId(Alarm alarm, tz.TZDateTime scheduledDate) async {
       print(
           '直近のアラーム情報が更新されました。\nID:${appSetting.feastAlarmTime} Time:${appSetting.movingAlarmId}');
     } else {
-      print('直近のアラーム情報の更新は必要ありません');
+      print('直近のアラーム情報の更新は必要ありませんでした。');
     }
   }
   deleteSettingData();
@@ -337,6 +363,7 @@ setSettingAlarmId(Alarm alarm, tz.TZDateTime scheduledDate) async {
 }
 
 startRingAlarm({bool vibrate = true}) async {
+  print('音と振動ON！');
   Alarm alarm = await getAlarm();
   loadSettingData();
   //登録されているアラームのバイブレーションがオンになっていれば振動もさせる
@@ -344,11 +371,13 @@ startRingAlarm({bool vibrate = true}) async {
   if (vibrate) {
     Vibration.vibrate(pattern: [500, 500, 500, 500], repeat: 2);
   }
+  //Androidのみ
   FlutterRingtonePlayer.playAlarm(
       looping: true, asAlarm: true, volume: appSetting.volume);
 }
 
 void stopRingAlarm() {
+  print('音と振動OFF！');
   FlutterRingtonePlayer.stop();
   Vibration.cancel();
 }

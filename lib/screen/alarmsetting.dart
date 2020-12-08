@@ -154,6 +154,15 @@ class _AlarmSettingState extends State<AlarmSetting> {
                                     "くり返し",
                                     style: itemName,
                                   ),
+                                  widthSpacer(width: size.width * 0.025),
+                                  Expanded(
+                                    child: Text(
+                                      "選択した曜日でくり返します。\n未選択だとくり返されません。",
+                                      maxLines: 2,
+                                      softWrap: true,
+                                    ),
+                                  ),
+                                  widthSpacer(width: size.width / 10),
                                 ],
                               ),
                             ),

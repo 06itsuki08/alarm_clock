@@ -14,6 +14,7 @@ saveAlarmData(List<Alarm> list) async {
   list.sort((a, b) => b.time.toString().compareTo(a.time.toString()));
   List<String> alarms = list.map((f) => json.encode(f.toJson())).toList();
   await pref.setStringList('alarms', alarms);
+  print('アラームリスト保存完了');
 }
 
 loadAlarmData({bool needReturn = false}) async {
@@ -25,6 +26,7 @@ loadAlarmData({bool needReturn = false}) async {
     list = result.map((f) => Alarm.fromJson(json.decode(f))).toList();
   }
   alarmList = list;
+  print('アラームリストロード完了');
   if (needReturn == true) {
     return list;
   }
@@ -33,6 +35,7 @@ loadAlarmData({bool needReturn = false}) async {
 deleteAlarmData() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   await pref.remove('alarms');
+  print('アラームリスト削除完了');
 }
 
 saveSettingData(UserSetting setting) async {
@@ -72,4 +75,5 @@ loadSettingData({bool needReturn = false}) async {
 deleteSettingData() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   await pref.remove('settings');
+  print("設定データ削除完了");
 }

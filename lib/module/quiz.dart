@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 //memo randomの範囲
 //int next(int min, int max) => min + _random.nextInt(max - min);
 
-int quizType = 2; //クイズの種類の数
+int quizType = 4; //クイズの種類の数
 
 int quizAnserNum = 5; //クイズの選択の数
-List<String> quizList = ['乱数足し算', 'ランダムカラー'];
+List<String> quizList = ['乱数足し算', 'ランダムカラー', 'ランダム文字列', '画像内の数'];
 
 //1~10の乱数の足し算　maxnum=>乱数の数
 List<int> randomNumAdd(int maxnum) {
+  print('----------------乱数足し算問題作成終了--------------');
   List<int> nums = new List<int>();
   int add = 0;
   var random = new math.Random();
@@ -24,14 +25,15 @@ List<int> randomNumAdd(int maxnum) {
     add += l;
   }
   nums.add(add);
+  print('----------------乱数足し算問題作成終了--------------');
   return nums;
 }
 
 final List<Color> colorList = <Color>[
-  Colors.pink[500],
+  Colors.pink[200],
   Colors.red[500],
   Colors.deepOrange[500],
-  Colors.orange[500],
+  Colors.orange[600],
   Colors.amber[500],
   Colors.yellow[500],
   Colors.lime[500],
@@ -103,6 +105,52 @@ randomColorSelsect(int colorNum) {
   return randomColors;
 }
 
-// Weather
+// RandomString
+//初期　文字リスト'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+String randomChar = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+int randomCharlength = randomChar.length;
+String randomString(int length) {
+  print('----------------ランダム文字列生成開始--------------');
+  var random = new math.Random();
+  String generatedString = '';
+  for (int i = 0; i < length; i++) {
+    int l = random.nextInt(randomCharlength);
+    generatedString += randomChar[l];
+  }
 
-//
+  print('----------------ランダム文字列生成終了--------------');
+  return generatedString;
+}
+
+// ImageQuiz
+List<String> imageObjectName = [
+  'りんご',
+  'バナナ',
+  'ぶどう',
+  'もも',
+  'みかん',
+  '英単語',
+  'ひらがな',
+  '英字',
+  'いらすと',
+  '果物の種類'
+];
+List<int> imageObjectNum = [1, 2, 1, 3, 1, 2, 3, 14, 2, 5];
+
+Map<String, List<int>> randomImage(int objectNum) {
+  print('----------------ランダム画像問題作成開始--------------');
+  var random = new math.Random();
+  List<int> ansInt = [];
+  String ansString;
+  int ran = random.nextInt(imageObjectName.length);
+  ansString = imageObjectName[ran];
+  ansInt.add(imageObjectNum[ran]);
+  for (int i = 0; i < objectNum - 1; i++) {
+    ran = random.nextInt(imageObjectName.length);
+    ansInt.add(imageObjectNum[ran]);
+  }
+  Map<String, List<int>> imageObjectAnser = {ansString: ansInt};
+
+  print('----------------ランダム画像問題作成終了--------------');
+  return imageObjectAnser;
+}

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -35,11 +38,51 @@ class _Home extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    //アラームが鳴っているときはアラーム停止画面に遷移、違う場合はメイン画面に遷移
-    if (moveAlarm) {
-      return AlarmStop();
+    if (Platform.isAndroid) {
+      //アラームが鳴っているときはアラーム停止画面に遷移、違う場合はメイン画面に遷移
+      if (moveAlarm) {
+        return AlarmStop();
+      } else {
+        return MainMenu();
+      }
     } else {
-      return MainMenu();
+      return OSisIOS();
     }
+  }
+}
+
+class OSisIOS extends StatefulWidget {
+  OSisIOS({Key key}) : super(key: key);
+  @override
+  IosPage createState() => IosPage();
+}
+
+class IosPage extends State<OSisIOS> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+            height: size.height,
+            width: size.width,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/background.png"),
+                fit: BoxFit.fill,
+              ),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('Sorry!!\niOSは、OSの制約によりサポートされていません。'),
+                ],
+              ),
+            )));
   }
 }

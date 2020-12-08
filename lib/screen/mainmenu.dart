@@ -25,10 +25,10 @@ class _MainMenuState extends State<MainMenu> {
   void initState() {
     if (moveAlarm != true) moveAlarm = false;
     if (alarmedId == null) alarmedId = 0;
-    setState(() {
-      if (alarmList != null) alarmList.clear();
-      loadAlarmData();
-    });
+
+    if (alarmList != null) alarmList.clear();
+    loadAlarmData();
+
     super.initState();
   }
 
@@ -119,13 +119,13 @@ class _MainMenuState extends State<MainMenu> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            /*クイズ検証用ショトカ
+                            /*クイズ検証用ショトカ*/
                             RaisedButton(
                               child: Text('QuizTest'),
                               onPressed: () {
                                 Navigator.pushNamed(context, '/snoozestop');
                               },
-                            ),*/
+                            ), //*/
                             heightSpacer(height: size.height * 0.01),
                             Container(
                               color: Colors.white.withOpacity(0.5),
@@ -133,6 +133,20 @@ class _MainMenuState extends State<MainMenu> {
                                 padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                                 child: Text(
                                   'アラーム登録数：${alarmList.length}',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'MPLUSRounded',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            heightSpacer(height: size.height * 0.01),
+                            Container(
+                              color: Colors.white.withOpacity(0.5),
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+                                child: Text(
+                                  'アラームを長押しで削除',
                                   style: TextStyle(
                                     fontSize: 30,
                                     fontFamily: 'MPLUSRounded',
@@ -161,43 +175,43 @@ class _MainMenuState extends State<MainMenu> {
                         )
                       : Center(
                           child: Card(
-                              //カード間を周囲10ポイント？空ける
-                              margin:
-                                  const EdgeInsets.fromLTRB(10, 20.0, 10, 10),
-                              //標高ってでてきたけど完全透明(color:Colors.transナンチャラ)にする際はこれが必要らしい
-                              elevation: 0,
-                              //カードの背景色を白かつ透明度を0.85にする
-                              color: Colors.white.withOpacity(0.85),
-                              child: Padding(
-                                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                  child: Column(
+                            //カード間を周囲10ポイント？空ける
+                            margin: const EdgeInsets.fromLTRB(10, 20.0, 10, 10),
+                            //標高ってでてきたけど完全透明(color:Colors.transナンチャラ)にする際はこれが必要らしい
+                            elevation: 0,
+                            //カードの背景色を白かつ透明度を0.85にする
+                            color: Colors.white.withOpacity(0.85),
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'アラーム未登録',
+                                    style: TextStyle(fontSize: 40),
+                                  ),
+                                  Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        'アラーム未登録',
-                                        style: TextStyle(fontSize: 40),
+                                        '上の',
+                                        style: TextStyle(fontSize: 20),
                                       ),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            '上の',
-                                            style: TextStyle(fontSize: 20),
-                                          ),
-                                          Icon(Icons.alarm_add),
-                                          Text(
-                                            'からアラームを追加',
-                                            style: TextStyle(fontSize: 20),
-                                          ),
-                                        ],
+                                      Icon(Icons.alarm_add),
+                                      Text(
+                                        'からアラームを追加',
+                                        style: TextStyle(fontSize: 20),
                                       ),
                                     ],
-                                  ))));
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
                 } else {
                   //取得失敗した場合
                   return Text("同期失敗");
