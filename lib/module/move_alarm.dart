@@ -121,7 +121,7 @@ setAlarmWeeklySchedule(Alarm alarm) async {
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       payload: '$scheduledDate');
 
   print('----------------通知登録完了--------------');
