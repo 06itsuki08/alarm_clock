@@ -14,6 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../main.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class AlarmStop extends StatefulWidget {
   @override
@@ -54,7 +55,7 @@ class _AlarmStopState extends State<AlarmStop> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text(alarmstop),
+          title: AutoSizeText(alarmstop),
         ),
         body: Container(
             height: size.height,
@@ -98,7 +99,7 @@ class _AlarmStopState extends State<AlarmStop> {
       //アラーム音を停止させる
       print('アラーム音停止呼び出し');
       final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
-      List<dynamic> list = [alarmedId, false];
+      List<dynamic> list = [alarmedId, false, 1.0, true, true];
       send?.send(list);
 
       //アラームを停止(音止めた)させた
@@ -131,7 +132,7 @@ class _AlarmStopState extends State<AlarmStop> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
-                    Text(
+                    AutoSizeText(
                       '${DateTime.now().month}月${DateTime.now().day}日',
                       style:
                           TextStyle(fontWeight: FontWeight.w400, fontSize: 30),
@@ -140,12 +141,12 @@ class _AlarmStopState extends State<AlarmStop> {
                   ],
                 ),
                 heightSpacer(height: size.height * 0.05),
-                Text(
+                AutoSizeText(
                     '${alarm.time.hour.toString().padLeft(2, '0')} : ${alarm.time.minute.toString().padLeft(2, '0')}',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 50)),
                 heightSpacer(height: size.height * 0.025),
-                Text('${alarm.description}',
+                AutoSizeText('${alarm.description}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
@@ -167,7 +168,7 @@ class _AlarmStopState extends State<AlarmStop> {
               ],
             );
           } else {
-            return Text('Alarm get failed');
+            return AutoSizeText('Alarm get failed');
           }
         });
   }
@@ -182,7 +183,7 @@ class _AlarmStopState extends State<AlarmStop> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
+              AutoSizeText(
                 '専用のQRコードをスキャンしてください',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
@@ -270,7 +271,7 @@ class _AlarmStopState extends State<AlarmStop> {
           children: [
             widthSpacer(width: size.width * 0.05),
             Expanded(
-              child: Text(
+              child: AutoSizeText(
                 'Q.下の足し算に回答してアラームを停止',
                 style: TextStyle(fontSize: 20),
                 maxLines: 3,
@@ -285,7 +286,7 @@ class _AlarmStopState extends State<AlarmStop> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            AutoSizeText(
               '${numQuiz[0]}＋${numQuiz[1]}＋${numQuiz[2]}＝？',
               style: TextStyle(fontSize: 30),
             ),
@@ -293,9 +294,10 @@ class _AlarmStopState extends State<AlarmStop> {
         ),
         heightSpacer(height: size.height * 0.05),
         if (quizIncorrectAnswer)
-          Text(
+          AutoSizeText(
             '不正解',
-            style: TextStyle(color: Colors.red, fontSize: 18),
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            minFontSize: 25,
           ),
         SizedBox(
           width: size.width * 0.2,
@@ -316,6 +318,7 @@ class _AlarmStopState extends State<AlarmStop> {
                 qrCodeFin = true;
                 quizIncorrectAnswer = false;
                 pushQRQuiz = false;
+                textCtrl.clear();
               });
             } else {
               setState(() {
@@ -336,7 +339,7 @@ class _AlarmStopState extends State<AlarmStop> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         heightSpacer(height: size.height * 0.1),
-        Text(
+        AutoSizeText(
           '10分後にスヌーズが鳴ります。\nクイズに答えてスヌーズを解除しましょう！',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),

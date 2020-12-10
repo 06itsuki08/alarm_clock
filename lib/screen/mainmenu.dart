@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 // ignore: must_be_immutable
 class MainMenu extends StatefulWidget {
@@ -38,10 +39,14 @@ class _MainMenuState extends State<MainMenu> {
     return Scaffold(
       //AppBarはアプリのタイトルとかを表示してくれる領域のこと
       appBar: AppBar(
-        title: Text(
+        title: AutoSizeText(
           title,
+          maxFontSize: 30,
+          maxLines: 1,
           style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w800, fontSize: 30),
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         actions: <Widget>[
           //アイコンをそのままボタンにしてくれるWidget
@@ -131,12 +136,12 @@ class _MainMenuState extends State<MainMenu> {
                               color: Colors.white.withOpacity(0.5),
                               child: Padding(
                                 padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
-                                child: Text(
+                                child: AutoSizeText(
                                   'アラーム登録数：${alarmList.length}',
                                   style: TextStyle(
-                                    fontSize: 30,
                                     fontFamily: 'MPLUSRounded',
                                   ),
+                                  minFontSize: 30,
                                 ),
                               ),
                             ),
@@ -175,7 +180,7 @@ class _MainMenuState extends State<MainMenu> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  AutoSizeText(
                                     'アラーム未登録',
                                     style: TextStyle(fontSize: 40),
                                   ),
@@ -184,12 +189,12 @@ class _MainMenuState extends State<MainMenu> {
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(
+                                      AutoSizeText(
                                         '上の',
                                         style: TextStyle(fontSize: 20),
                                       ),
                                       Icon(Icons.alarm_add),
-                                      Text(
+                                      AutoSizeText(
                                         'からアラームを追加',
                                         style: TextStyle(fontSize: 20),
                                       ),
@@ -202,7 +207,7 @@ class _MainMenuState extends State<MainMenu> {
                         );
                 } else {
                   //取得失敗した場合
-                  return Text("同期失敗");
+                  return AutoSizeText("同期失敗");
                 }
               }),
         ),

@@ -42,7 +42,7 @@ Future<void> main() async {
   receivePort.listen((message) {
     alarmedId = message[0];
     if (message[1]) {
-      startRingAlarm();
+      startRingAlarm(volume: message[2], vibrate: message[3], vibrateGet: true);
     } else {
       stopRingAlarm();
     }
@@ -81,10 +81,17 @@ Future<void> main() async {
     moveAlarm = true;
     if (moveAlarm != true) moveAlarm = true;
     loadSettingData();
+    /*
     Alarm alarm = await getAlarm();
     final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
-    List<dynamic> list = [appSetting.movingAlarmId, alarm.vibration];
+    List<dynamic> list = [
+      appSetting.movingAlarmId,
+      alarm.vibration,
+      appSetting.volume,
+      true
+    ];
     send?.send(list);
+    */
     BuildContext context;
     Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
   });
@@ -133,7 +140,12 @@ void callbackDispatcher() async {
         if (moveAlarm != true) moveAlarm = true;
         alarmedId = inputData['int'];
         print('Ring! Alarm id ${inputData['int']}');
-        List<dynamic> list = [inputData['int'], true];
+        List<dynamic> list = [
+          inputData['int'],
+          true,
+          inputData['volume'],
+          inputData['vibration']
+        ];
         final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
 
         send?.send(list);
@@ -142,7 +154,12 @@ void callbackDispatcher() async {
         if (moveAlarm != true) moveAlarm = true;
         alarmedId = inputData['int'];
         print('Ring! Snooze id ${inputData['int']}');
-        List<dynamic> list = [inputData['int'], true];
+        List<dynamic> list = [
+          inputData['int'],
+          true,
+          inputData['volume'],
+          inputData['vibration']
+        ];
         final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
         send?.send(list);
         break;

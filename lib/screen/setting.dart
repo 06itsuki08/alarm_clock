@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class Setting extends StatefulWidget {
   Setting({Key key}) : super(key: key);
@@ -57,7 +58,7 @@ class _SettingState extends State<Setting> {
     return Scaffold(
       //AppBarはアプリのタイトルとかを表示してくれる領域のこと
       appBar: AppBar(
-        title: Text(setting),
+        title: AutoSizeText(setting),
       ),
       //body アプリのメイン画面
       //Column 子供になるパーツが全部縦に並んでくれる　子供はchildren にいれる
@@ -76,7 +77,7 @@ class _SettingState extends State<Setting> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               heightSpacer(height: size.height * 0.1),
-              Text('アラームの音量',
+              AutoSizeText('アラームの音量',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               Slider(
                 label: '$value',
@@ -116,11 +117,12 @@ class _SettingState extends State<Setting> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 ),
               ),
+              //line(),
               heightSpacer(height: size.height * 0.05),
-              Text('スヌーズ解除時のクイズの種類',
+              AutoSizeText('スヌーズ解除時のクイズの種類',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               if (quizChecker == false)
-                Text('クイズは1つ以上ONにしてください',
+                AutoSizeText('クイズは1つ以上ONにしてください',
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -160,9 +162,10 @@ class _SettingState extends State<Setting> {
             child: CheckboxListTile(
                 activeColor: Colors.amber,
                 checkColor: Colors.white,
-                title: Text(
+                title: AutoSizeText(
                   '${quizList[i]}',
-                  style: TextStyle(fontSize: 20),
+                  minFontSize: 20,
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
                 value: isSelected[i],

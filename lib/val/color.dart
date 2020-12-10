@@ -14,7 +14,7 @@ final ThemeData appTheme = ThemeData(
   fontFamily: 'MPLUSRounded',
 );
 
-final TextStyle itemName = TextStyle(
-    fontWeight: FontWeight.bold, fontSize: 25, fontFamily: 'MPLUSRounded');
+final TextStyle itemName =
+    TextStyle(fontWeight: FontWeight.bold, fontFamily: 'MPLUSRounded');
 
 final TextStyle alarmItem = TextStyle(fontSize: 18, fontFamily: 'MPLUSRounded');

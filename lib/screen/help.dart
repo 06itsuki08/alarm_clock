@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class Help extends StatefulWidget {
   Help({Key key}) : super(key: key);
@@ -23,7 +24,7 @@ class _HelpState extends State<Help> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: AutoSizeText(
             'ヘルプ',
             style: TextStyle(
                 color: Colors.white, fontWeight: FontWeight.w800, fontSize: 25),
@@ -62,7 +63,7 @@ class HelpHome extends StatelessWidget {
           ),
           child: Padding(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child: Text(
+              child: AutoSizeText(
                 '各種ボタンの説明',
                 style: TextStyle(
                   fontSize: 20,
@@ -87,7 +88,7 @@ class HelpHome extends StatelessWidget {
                         Icons.alarm_add,
                         size: 25,
                       ),
-                      Text('：アラームの新規追加画面に移動します。',
+                      AutoSizeText('：アラームの新規追加画面に移動します。',
                           style: TextStyle(
                             fontSize: 16,
                           )),
@@ -102,7 +103,7 @@ class HelpHome extends StatelessWidget {
                         Icons.settings,
                         size: 25,
                       ),
-                      Text('：設定画面やヘルプ画面に移動します。',
+                      AutoSizeText('：設定画面やヘルプ画面に移動します。',
                           style: TextStyle(
                             fontSize: 16,
                           )),
@@ -113,7 +114,7 @@ class HelpHome extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('アラームを長押しすると削除することができます。',
+                      AutoSizeText('アラームを長押しすると削除することができます。',
                           style: TextStyle(
                             fontSize: 16,
                           )),
@@ -130,7 +131,7 @@ class HelpHome extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: Text(
+            child: AutoSizeText(
               'アラームに関する各種アイコンの説明',
               style: TextStyle(
                 fontSize: 20,
@@ -147,7 +148,7 @@ class HelpHome extends StatelessWidget {
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                     child: Column(children: [
-                      Text('振動の有無',
+                      AutoSizeText('振動の有無',
                           style: TextStyle(
                             fontSize: 18,
                           )),
@@ -160,7 +161,7 @@ class HelpHome extends StatelessWidget {
                             Icons.notifications_off,
                             size: 25,
                           ),
-                          Text('：振動あり',
+                          AutoSizeText('：振動あり',
                               style: TextStyle(
                                 fontSize: 16,
                               )),
@@ -174,7 +175,7 @@ class HelpHome extends StatelessWidget {
                             Icons.notifications_active,
                             size: 25,
                           ),
-                          Text('：振動なし',
+                          AutoSizeText('：振動なし',
                               style: TextStyle(
                                 fontSize: 16,
                               )),
@@ -190,7 +191,7 @@ class HelpHome extends StatelessWidget {
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                     child: Column(children: [
-                      Text('QRコードによる停止機能',
+                      AutoSizeText('QRコードによる停止機能',
                           style: TextStyle(
                             fontSize: 18,
                           )),
@@ -203,7 +204,7 @@ class HelpHome extends StatelessWidget {
                             Icons.notifications_active,
                             size: 25,
                           ),
-                          Text('：QRコードによる停止機能ON',
+                          AutoSizeText('：QRコードによる停止機能ON',
                               style: TextStyle(
                                 fontSize: 16,
                               )),
@@ -217,7 +218,7 @@ class HelpHome extends StatelessWidget {
                             Icons.block,
                             size: 25,
                           ),
-                          Text('：QRコードによる停止機能OFF',
+                          AutoSizeText('：QRコードによる停止機能OFF',
                               style: TextStyle(
                                 fontSize: 16,
                               )),
@@ -230,7 +231,7 @@ class HelpHome extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: Text(
+            child: AutoSizeText(
               'クレジット',
               style: TextStyle(
                 fontSize: 20,
@@ -247,35 +248,35 @@ class HelpHome extends StatelessWidget {
                 child: Padding(
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                     child: Column(children: [
-                      Text(
+                      AutoSizeText(
                         '製作',
                         style: TextStyle(fontSize: 20),
                       ),
-                      Text('猫の会', style: TextStyle(fontSize: 18)),
-                      Text('岩尾 実柚紀 志和 樹 櫻井 千晶',
+                      AutoSizeText('猫の会', style: TextStyle(fontSize: 18)),
+                      AutoSizeText('岩尾 実柚紀 志和 樹 櫻井 千晶',
                           style: TextStyle(
                             fontSize: 16,
                           )),
                       heightSpacer(height: size.height * 0.01),
-                      Text(
+                      AutoSizeText(
                         'フォント',
                         style: TextStyle(
                           fontSize: 20,
                         ),
                       ),
-                      Text(
+                      AutoSizeText(
                           'MPLUSRounded1c\nきろ字(kilo)\nRounded-X Mgen+ 1c black\n游ゴシック Regular',
                           style: TextStyle(
                             fontSize: 16,
                           )),
                       heightSpacer(height: size.height * 0.01),
-                      Text(
+                      AutoSizeText(
                         'クイズイラスト',
                         style: TextStyle(
                           fontSize: 20,
                         ),
                       ),
-                      Text('いらすとや',
+                      AutoSizeText('いらすとや',
                           style: TextStyle(
                             fontSize: 16,
                           )),

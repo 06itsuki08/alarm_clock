@@ -6,6 +6,7 @@ import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:auto_size_text/auto_size_text.dart';
 
 class SnoozeStop extends StatefulWidget {
   @override
@@ -20,8 +21,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
   bool quizClear;
   Timer quizTimer;
   int _second;
-  String quizStartText;
-
+  String mistakeText = '';
   @override
   void initState() {
     super.initState();
@@ -31,7 +31,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
     quizClear = false;
     quizStart = false;
     _second = 15;
-    quizStartText = 'クイズが開始されます。\n${_second}秒経過するか間違えた回答をすると別の問題に切り替わります。';
+    mistakeText = '不正解！';
     //表示バグで問題が出ないときがあるので複数問題をいったん除外
     //\n問題は全部で${appSetting.quizClearCount}問
   }
@@ -44,17 +44,14 @@ class _SnoozeStopState extends State<SnoozeStop> {
   }
 
   Timer countTimer() {
-    return Timer.periodic(
-      const Duration(seconds: 1),
-      (Timer timer) {
-        if (_second < 1) {
-          timer.cancel();
-          if (mounted) {
-            setState(() {});
-          }
-        } else {
-          _second = _second - 1;
-        }
+    return Timer(
+      Duration(seconds: _second),
+      () {
+        if (mounted)
+          setState(() {
+            quizMistake = true;
+            mistakeText = 'タイムアウト！';
+          });
       },
     );
   }
@@ -64,7 +61,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text(snoozestop),
+          title: AutoSizeText(snoozestop),
         ),
         body: Container(
             height: size.height,
@@ -84,8 +81,15 @@ class _SnoozeStopState extends State<SnoozeStop> {
     } else if (quizStart && !quizClear) {
       //} else if (quizStart && quizClearCount < appSetting.quizClearCount) {
       //クイズ画面
-      _second = 15;
-
+      if (quizMistake) {
+        print(mistakeText);
+        quizTimer.cancel();
+        controller.clear();
+        quizMistake = false;
+      }
+      if (quizTimer != null && quizTimer.isActive) {
+        quizTimer.cancel();
+      }
       quizTimer = countTimer();
       return randomQuizSelect();
       //} else if (quizClearCount == appSetting.quizClearCount) {
@@ -103,13 +107,21 @@ class _SnoozeStopState extends State<SnoozeStop> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         heightSpacer(height: size.height * 0.1),
-        Container(
-          width: size.width,
-          child: Text(
-            '$quizStartText',
-            style: TextStyle(fontSize: 20),
-            softWrap: true,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            widthSpacer(width: size.width * 0.1),
+            Flexible(
+              child: AutoSizeText(
+                'クイズを開始します。\n$_second 秒経過するか間違えた回答をすると別の問題に切り替わります。',
+                softWrap: true,
+                minFontSize: 25,
+                wrapWords: true,
+              ),
+            ),
+            widthSpacer(width: size.width * 0.1),
+          ],
         ),
         heightSpacer(height: size.height * 0.1),
         RaisedButton(
@@ -177,7 +189,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         heightSpacer(height: size.height * 0.1),
-        Text(
+        AutoSizeText(
           '問題に正解しました！\n下のボタンからスヌーズ解除が出来ます',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
@@ -214,7 +226,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
+              AutoSizeText(
                 'あと${(appSetting.quizClearCount - quizClearCount)}問',
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
@@ -228,7 +240,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
           children: [
             widthSpacer(width: size.width * 0.05),
             Expanded(
-              child: Text(
+              child: AutoSizeText(
                 'Q.$quizAnserNum つの乱数の足し算',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 maxLines: 3,
@@ -243,7 +255,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            AutoSizeText(
               '${randomNumQuiz[0]}＋${randomNumQuiz[1]}＋${randomNumQuiz[2]}＋${randomNumQuiz[3]}＋${randomNumQuiz[4]}＝？',
               style: TextStyle(fontSize: 30),
             ),
@@ -251,13 +263,14 @@ class _SnoozeStopState extends State<SnoozeStop> {
         ),
         heightSpacer(height: size.height * 0.05),
         if (quizMistake)
-          Text(
-            '不正解',
-            style: TextStyle(color: Colors.red, fontSize: 18),
+          AutoSizeText(
+            mistakeText,
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            minFontSize: 25,
           ),
         SizedBox(
           width: size.width * 0.2,
-          child: TextField(
+          child: new TextField(
             enabled: true,
             controller: controller,
             cursorColor: Colors.amber,
@@ -276,6 +289,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
               });
             } else {
               setState(() {
+                mistakeText = '不正解！';
                 quizMistake = true;
               });
             }
@@ -302,7 +316,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('あと${(appSetting.quizClearCount - quizClearCount)}問',
+                AutoSizeText('あと${(appSetting.quizClearCount - quizClearCount)}問',
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
@@ -310,7 +324,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
                 widthSpacer(width: size.width * 0.1),
               ]),
               */
-          Text(
+          AutoSizeText(
             'Q.下の四角形の中の色を答えてください',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -325,9 +339,10 @@ class _SnoozeStopState extends State<SnoozeStop> {
           ),
           heightSpacer(height: size.height * 0.05),
           if (quizMistake)
-            Text(
-              '不正解',
-              style: TextStyle(color: Colors.red, fontSize: 18),
+            AutoSizeText(
+              mistakeText,
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              minFontSize: 25,
             ),
           for (int i = 0; i < randomcolor.length; i++)
             SizedBox(
@@ -336,16 +351,13 @@ class _SnoozeStopState extends State<SnoozeStop> {
                 onPressed: () {
                   if (randomColor[i] == trueColor) {
                     setState(() {
-                      quizTimer.cancel();
-                      countTimer().cancel();
                       //quizClearCount += 1;
                       quizClear = true;
                       quizMistake = false;
                     });
                   } else {
                     setState(() {
-                      quizTimer.cancel();
-                      countTimer().cancel();
+                      mistakeText = '不正解！';
                       quizMistake = true;
                     });
                   }
@@ -370,7 +382,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
             children: [
               widthSpacer(width: size.width * 0.05),
               Expanded(
-                child: Text(
+                child: AutoSizeText(
                   'Q.下に表示されている文字列と同じものを入力して下さい',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
@@ -382,7 +394,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
+            AutoSizeText(
               '$randomString',
               style: TextStyle(fontSize: 30),
             ),
@@ -390,17 +402,18 @@ class _SnoozeStopState extends State<SnoozeStop> {
         ),
         heightSpacer(height: size.height * 0.05),
         if (quizMistake)
-          Text(
-            '不正解',
-            style: TextStyle(color: Colors.red, fontSize: 18),
+          AutoSizeText(
+            mistakeText,
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            minFontSize: 25,
           ),
         SizedBox(
           width: size.width * 0.2,
-          child: TextField(
+          child: new TextField(
             enabled: true,
             controller: controller,
             cursorColor: Colors.amber,
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.url,
             maxLines: 1,
           ),
         ),
@@ -409,21 +422,18 @@ class _SnoozeStopState extends State<SnoozeStop> {
           onPressed: () {
             if (controller.text == randomString) {
               setState(() {
-                quizTimer.cancel();
-                countTimer().cancel();
                 quizClear = true;
                 //quizClearCount += 1;
                 quizMistake = false;
               });
             } else {
               setState(() {
-                quizTimer.cancel();
-                countTimer().cancel();
+                mistakeText = '不正解！';
                 quizMistake = true;
               });
             }
           },
-          child: Text('答え合わせ'),
+          child: AutoSizeText('答え合わせ'),
         ),
       ],
     );
@@ -437,7 +447,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           heightSpacer(height: size.height * 0.05),
-          Text(
+          AutoSizeText(
             'Q.下の画像の「${answer.keys.first}」はいくつ？',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -457,9 +467,10 @@ class _SnoozeStopState extends State<SnoozeStop> {
           ),
           heightSpacer(height: size.height * 0.05),
           if (quizMistake)
-            Text(
-              '不正解',
-              style: TextStyle(color: Colors.red, fontSize: 18),
+            AutoSizeText(
+              mistakeText,
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              minFontSize: 25,
             ),
           for (int i = 0; i < selectAnswer.length; i++)
             SizedBox(
@@ -468,17 +479,12 @@ class _SnoozeStopState extends State<SnoozeStop> {
                 onPressed: () {
                   if (selectAnswer[i] == selectAnswer[0]) {
                     setState(() {
-                      quizTimer.cancel();
-                      countTimer().cancel();
-                      quizTimer.cancel();
-                      //quizClearCount += 1;
                       quizClear = true;
                       quizMistake = false;
                     });
                   } else {
                     setState(() {
-                      quizTimer.cancel();
-                      countTimer().cancel();
+                      mistakeText = '不正解！';
                       quizMistake = true;
                     });
                   }

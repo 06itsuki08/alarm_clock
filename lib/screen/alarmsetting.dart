@@ -2,6 +2,7 @@ import 'package:alarm_clock/module/alarm_list.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/val/color.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:alarm_clock/val/string.dart';
@@ -76,14 +77,19 @@ class _AlarmSettingState extends State<AlarmSetting> {
                         child: SizedBox(
                           child: Column(children: <Widget>[
                             heightSpacer(height: 5),
-                            Text(
-                              '${setTime.hour.toString().padLeft(2, '0')}:${setTime.minute.toString().padLeft(2, '0')}',
-                              style: TextStyle(fontSize: 90),
+                            FittedBox(
+                              fit: BoxFit.fitWidth,
+                              child: AutoSizeText(
+                                '${setTime.hour.toString().padLeft(2, '0')}:${setTime.minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(),
+                                minFontSize: 90,
+                                maxLines: 1,
+                              ),
                             ),
                             SizedBox(height: 5),
                             RaisedButton(
                               onPressed: () => selectTime(context),
-                              child: new Text(
+                              child: Text(
                                 '時間選択',
                                 style: TextStyle(fontSize: 30),
                               ),
@@ -105,9 +111,11 @@ class _AlarmSettingState extends State<AlarmSetting> {
                                 children: <Widget>[
                                   widthSpacer(width: size.width * 0.1),
                                   SizedBox(
-                                    child: Text(
+                                    child: AutoSizeText(
                                       'アラームの説明',
                                       style: itemName,
+                                      minFontSize: 25,
+                                      maxLines: 1,
                                     ),
                                   ),
                                 ],
@@ -150,13 +158,14 @@ class _AlarmSettingState extends State<AlarmSetting> {
                                 children: <Widget>[
                                   heightSpacer(height: size.height * 0.025),
                                   widthSpacer(width: size.width / 10),
-                                  Text(
+                                  AutoSizeText(
                                     "くり返し",
                                     style: itemName,
+                                    minFontSize: 25,
                                   ),
                                   widthSpacer(width: size.width * 0.025),
                                   Expanded(
-                                    child: Text(
+                                    child: AutoSizeText(
                                       "選択した曜日でくり返します。\n未選択だとくり返されません。",
                                       maxLines: 2,
                                       softWrap: true,
@@ -202,9 +211,10 @@ class _AlarmSettingState extends State<AlarmSetting> {
                         child: SizedBox(
                           child: SwitchListTile(
                             value: vibration,
-                            title: Text(
+                            title: AutoSizeText(
                               'バイブレーション',
                               style: itemName,
+                              minFontSize: 25,
                             ),
                             onChanged: (bool value) {
                               setState(() {
@@ -221,9 +231,10 @@ class _AlarmSettingState extends State<AlarmSetting> {
                         child: SizedBox(
                           child: SwitchListTile(
                             value: qrCodeMode,
-                            title: Text(
+                            title: AutoSizeText(
                               'QRコードモード',
                               style: itemName,
+                              minFontSize: 25,
                             ),
                             onChanged: (bool value) {
                               setState(() {

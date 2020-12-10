@@ -5,6 +5,7 @@ import 'package:alarm_clock/screen/mainmenu.dart';
 import 'package:alarm_clock/val/string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class Home extends StatefulWidget {
   Home({Key key}) : super(key: key);
@@ -80,7 +81,7 @@ class IosPage extends State<OSisIOS> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('Sorry!!\niOSは、OSの制約によりサポートされていません。'),
+                  AutoSizeText('Sorry!!\niOSは、OSの制約によりサポートされていません。'),
                 ],
               ),
             )));

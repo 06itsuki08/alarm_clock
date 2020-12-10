@@ -6,6 +6,7 @@ import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:alarm_clock/screen/home.dart';
 import 'package:alarm_clock/val/string.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -42,7 +43,8 @@ setAlarmOnceSchedule(Alarm alarm) async {
         'int': alarm.alarmId,
         'vibration': alarm.vibration,
         'hour': alarm.time.hour,
-        'minute': alarm.time.minute
+        'minute': alarm.time.minute,
+        'volume': appSetting.volume,
       });
 
   print('----------------バックグラウンド処理登録完了--------------');
@@ -92,7 +94,8 @@ setAlarmWeeklySchedule(Alarm alarm) async {
         'int': alarm.alarmId,
         'vibration': alarm.vibration,
         'hour': alarm.time.hour,
-        'minute': alarm.time.minute
+        'minute': alarm.time.minute,
+        'volume': appSetting.volume,
       });
 
   print('----------------バックグラウンド処理登録完了--------------');
@@ -142,7 +145,8 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
         'int': alarm.alarmId - 1,
         'vibration': alarm.vibration,
         'hour': alarm.time.hour,
-        'minute': alarm.time.minute
+        'minute': alarm.time.minute,
+        'volume': appSetting.volume,
       });
 
   print('----------------バックグラウンド処理登録完了--------------');
@@ -258,12 +262,12 @@ Future onDidReceiveLocalNotification(
   showDialog(
     context: context,
     builder: (BuildContext context) => CupertinoAlertDialog(
-      title: Text(alarm.description),
-      content: Text('${alarm.description}の時間になりました'),
+      title: AutoSizeText(alarm.description),
+      content: AutoSizeText('${alarm.description}の時間になりました'),
       actions: [
         CupertinoDialogAction(
           isDefaultAction: true,
-          child: Text('アラームを停止する'),
+          child: AutoSizeText('アラームを停止する'),
           onPressed: () {
             Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
           },
@@ -362,18 +366,26 @@ setSettingAlarmId(Alarm alarm, tz.TZDateTime scheduledDate) async {
   saveSettingData(appSetting);
 }
 
-startRingAlarm({bool vibrate = true}) async {
+startRingAlarm(
+    {bool vibrate = true,
+    double volume = -1.0,
+    bool vibrateGet = false}) async {
   print('音と振動ON！');
-  Alarm alarm = await getAlarm();
-  loadSettingData();
+  if (!vibrateGet) {
+    Alarm alarm = await getAlarm();
+    vibrate = alarm.vibration;
+  }
+  if (volume < 0) {
+    loadSettingData();
+    volume = appSetting.volume;
+  }
   //登録されているアラームのバイブレーションがオンになっていれば振動もさせる
-  if (alarm.vibration == false) vibrate = false;
+
   if (vibrate) {
     Vibration.vibrate(pattern: [500, 500, 500, 500], repeat: 2);
   }
   //Androidのみ
-  FlutterRingtonePlayer.playAlarm(
-      looping: true, asAlarm: true, volume: appSetting.volume);
+  FlutterRingtonePlayer.playAlarm(looping: true, asAlarm: true, volume: volume);
 }
 
 void stopRingAlarm() {

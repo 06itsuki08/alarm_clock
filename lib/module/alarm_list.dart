@@ -5,6 +5,7 @@ import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/user_setting.dart';
 import 'package:alarm_clock/val/color.dart';
 import 'package:alarm_clock/val/string.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -145,14 +146,15 @@ buildListItem(Alarm alarm) {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               //時間
-              Text(
+              AutoSizeText(
                 '${alarm.time.hour.toString().padLeft(2, '0')}:${alarm.time.minute.toString().padLeft(2, '0')}',
                 style: TextStyle(
-                    fontSize: 40,
+
                     //新たに追加したフォント
                     fontFamily: 'MPLUSRounded',
                     //フォントを太字にする
                     fontWeight: FontWeight.bold),
+                minFontSize: 40,
               ),
             ],
           ),
@@ -184,10 +186,9 @@ buildListItem(Alarm alarm) {
             children: <Widget>[
               //アラームの説明
               Expanded(
-                child: Text(
+                child: AutoSizeText(
                   alarm.description,
                   style: TextStyle(
-                    fontSize: 20,
                     //今回新たに追加したフォント Googleフォントで下の名前のである
                     fontFamily: 'MPLUSRounded',
                   ),
@@ -199,6 +200,7 @@ buildListItem(Alarm alarm) {
                   softWrap: true,
                   //テキストの表示位置　上のRowのmainAxisのcenterが効かなかったのでここでも指定
                   textAlign: TextAlign.center,
+                  minFontSize: 20,
                 ),
               ),
             ],
@@ -238,11 +240,11 @@ checkRepeat(List<int> list) {
   /*
   元々elseでスペースを返していた
     //全ての曜日を選択した場合のスペースはこれ「　　　　　　　      」
-    //return Text('　　　　　　　      ',style: TextStyle(fontSize: 18, fontFamily: 'MPLUSRounded'));
+    //return AutoSizeText('　　　　　　　      ',style: TextStyle(fontSize: 18, fontFamily: 'MPLUSRounded'));
   */
 }
 
-Text buildRepeatIcon(List<int> list) {
+AutoSizeText buildRepeatIcon(List<int> list) {
   String youbi = '';
   for (int i = 0; i < list.length; i++) {
     switch (list[i]) {
@@ -275,7 +277,7 @@ Text buildRepeatIcon(List<int> list) {
       youbi += ' , ';
     }
   }
-  Text text = Text(
+  AutoSizeText text = AutoSizeText(
     '$youbi',
     style: TextStyle(
         fontSize: 20, fontFamily: 'MPLUSRounded', fontWeight: FontWeight.bold),

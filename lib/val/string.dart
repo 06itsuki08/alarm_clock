@@ -38,11 +38,12 @@ BoxDecoration borderLine = BoxDecoration(
   )),
 );
 
-/*
-円形ボタンのstyle
-CircleBorder circleButton = CircleBorder(
-    side: BorderSide(
-  color: Colors.greenAccent,
-  width: 1.0,
-  style: BorderStyle.solid,
-));*/
+Divider line() {
+  return Divider(
+    color: Colors.amber[400],
+    height: size.height * 0.05,
+    thickness: 1.0,
+    indent: size.width * 0.05,
+    endIndent: size.width * 0.05,
+  );
+}
