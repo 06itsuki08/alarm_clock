@@ -244,11 +244,11 @@ tz.TZDateTime _nextInstanceWeek(Alarm alarm) {
   return scheduledDate;
 }
 
-canselAlarm(int id) async {
+cancelAlarm(int id) async {
   await flutterLocalNotificationsPlugin.cancel(id);
 }
 
-canselAllAlarm() async {
+cancelAllAlarm() async {
   await flutterLocalNotificationsPlugin.cancelAll();
 }
 
