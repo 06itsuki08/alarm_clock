@@ -88,8 +88,8 @@ Future<void> deleteAlarm(Alarm alarm) async {
   print('-----バックグラウンド処理解除--------');
 
   //アラームの通知を解除
-  canselAlarm(alarm.alarmId);
-  canselAlarm(alarm.alarmId + 1);
+  cancelAlarm(alarm.alarmId);
+  cancelAlarm(alarm.alarmId + 1);
   print('-----通知解除--------');
 
   //アラームリストからアラームを除外

@@ -252,7 +252,7 @@ cancelAllAlarm() async {
   await flutterLocalNotificationsPlugin.cancelAll();
 }
 
-// iOSでのフォアグランドでの動作
+// iOS10でのフォアグランドでの動作
 Future onDidReceiveLocalNotification(
     int id, String title, String body, String payload) async {
   // display a dialog with the notification details, tap ok to go to another page
