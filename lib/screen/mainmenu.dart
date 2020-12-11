@@ -224,7 +224,7 @@ class _MainMenuState extends State<MainMenu> {
   deleteAlarmMode(Alarm alarm) async {
     Text title = Text(alartConfirmation);
     Text content = Text(alartDeleteAlarm);
-    Text _cansel = Text(cansel);
+    Text _cancel = Text(cancel);
     Text _delete = Text(delete);
     await showDialog(
         context: context,
@@ -235,7 +235,7 @@ class _MainMenuState extends State<MainMenu> {
               content: content,
               actions: <Widget>[
                 CupertinoDialogAction(
-                  child: _cansel,
+                  child: _cancel,
                   onPressed: () => Navigator.pop(context),
                 ),
                 CupertinoDialogAction(
@@ -255,7 +255,7 @@ class _MainMenuState extends State<MainMenu> {
               content: content,
               actions: <Widget>[
                 FlatButton(
-                  child: _cansel,
+                  child: _cancel,
                   onPressed: () => Navigator.pop(context),
                 ),
                 FlatButton(

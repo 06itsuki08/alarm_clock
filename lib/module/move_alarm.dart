@@ -318,7 +318,7 @@ stopAlarm10minSnooze() async {
   //スヌーズ用の通知とバックグラウンド処理をキャンセル
   Workmanager.cancelByUniqueName(id.toString());
   await flutterLocalNotificationsPlugin.cancel(id);
-  print('cansel snooze schedule ID:$id');
+  print('cancel snooze schedule ID:$id');
 
   //もし単発のアラームであれば削除する
   //alarmListと端末からも消える　ホーム画面でも消える
