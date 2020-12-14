@@ -311,19 +311,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           heightSpacer(height: size.height * 0.05),
-          /*
-          Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                AutoSizeText('あと${(appSetting.quizClearCount - quizClearCount)}問',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    )),
-                widthSpacer(width: size.width * 0.1),
-              ]),
-              */
+
           AutoSizeText(
             'Q.下の四角形の中の色を答えてください',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -360,10 +348,17 @@ class _SnoozeStopState extends State<SnoozeStop> {
                       mistakeText = '不正解！';
                       quizMistake = true;
                     });
+                    if (appSetting.colorCodeQuiz)
+                      print(
+                          '正解は、${trueColor.red.toRadixString(16).toUpperCase()}${trueColor.green.toRadixString(16).toUpperCase()}${trueColor.blue.toRadixString(16).toUpperCase()}');
                   }
                 },
-                child: Text('${randomColorName[i]}',
-                    style: TextStyle(fontSize: 20)),
+                child: (appSetting.colorCodeQuiz)
+                    ? Text(
+                        '${randomColor[i].red.toRadixString(16).toUpperCase()}${randomColor[i].green.toRadixString(16).toUpperCase()}${randomColor[i].blue.toRadixString(16).toUpperCase()}',
+                        style: TextStyle(fontSize: 20))
+                    : Text('${randomColorName[i]}',
+                        style: TextStyle(fontSize: 20)),
               ),
             ),
         ]);
