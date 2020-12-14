@@ -11,20 +11,24 @@ class UserSetting {
   List<bool> useQuiz;
   //スヌーズ解除の為の問題の数
   int quizClearCount = 3;
+  //ランダムカラーの選択肢がカラーコードか否か
+  bool colorCodeQuiz;
 
   UserSetting(
       {this.movingAlarmId,
       this.feastAlarmTime,
       this.volume,
       this.useQuiz,
-      this.quizClearCount});
+      this.quizClearCount,
+      this.colorCodeQuiz});
 
   Map toJson() => {
         'movingAlarmId': movingAlarmId,
         'feastAlarmTime': '$feastAlarmTime',
         'volume': volume,
         'useQuiz': useQuiz,
-        'quizClearCount': quizClearCount
+        'quizClearCount': quizClearCount,
+        'colorCodeQuiz': colorCodeQuiz
       };
 
   UserSetting.fromJson(Map json)
@@ -32,7 +36,8 @@ class UserSetting {
         feastAlarmTime = tz.TZDateTime.parse(tz.local, json['feastAlarmTime']),
         volume = json['volume'],
         useQuiz = json['useQuiz'].cast<bool>() as List<bool>,
-        quizClearCount = json['quizClearCount'];
+        quizClearCount = json['quizClearCount'],
+        colorCodeQuiz = json['colorCodeQuiz'];
 }
 
 UserSetting appSetting;
