@@ -355,7 +355,7 @@ class _SnoozeStopState extends State<SnoozeStop> {
                 },
                 child: (appSetting.colorCodeQuiz)
                     ? Text(
-                        '${randomColor[i].red.toRadixString(16).toUpperCase()}${randomColor[i].green.toRadixString(16).toUpperCase()}${randomColor[i].blue.toRadixString(16).toUpperCase()}',
+                        '#${randomColor[i].red.toRadixString(16).toUpperCase()}${randomColor[i].green.toRadixString(16).toUpperCase()}${randomColor[i].blue.toRadixString(16).toUpperCase()}',
                         style: TextStyle(fontSize: 20))
                     : Text('${randomColorName[i]}',
                         style: TextStyle(fontSize: 20)),
