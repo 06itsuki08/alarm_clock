@@ -85,17 +85,6 @@ Future<void> main() async {
     moveAlarm = true;
     if (moveAlarm != true) moveAlarm = true;
     loadSettingData();
-    /*
-    Alarm alarm = await getAlarm();
-    final SendPort send = IsolateNameServer.lookupPortByName(sendPortName);
-    List<dynamic> list = [
-      appSetting.movingAlarmId,
-      alarm.vibration,
-      appSetting.volume,
-      true
-    ];
-    send?.send(list);
-    */
     BuildContext context;
     Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
   });

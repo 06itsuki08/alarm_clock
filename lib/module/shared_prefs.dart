@@ -64,7 +64,8 @@ loadSettingData({bool needReturn = false}) async {
         feastAlarmTime: initDateTime,
         volume: 1.0,
         useQuiz: intList,
-        quizClearCount: 3);
+        quizClearCount: 3,
+        colorCodeQuiz: false);
     print('設定データ読み込み失敗');
   }
   appSetting = settings;

@@ -124,7 +124,7 @@ class _MainMenuState extends State<MainMenu> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            /*クイズ検証用ショトカ
+                            /*クイズ検証用ショトカ下のボタンをコメントアウトから戻してね
                             RaisedButton(
                               child: Text('QuizTest'),
                               onPressed: () {

@@ -128,6 +128,10 @@ class _SettingState extends State<Setting> {
                         fontWeight: FontWeight.bold,
                         color: Colors.red)),
               buildQuizCheckBox(),
+              heightSpacer(height: size.height * 0.01),
+              AutoSizeText('クイズの難易度アップオプション',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              buildColorCodeQuizSwitch(),
             ],
           ),
         ),
@@ -191,6 +195,29 @@ class _SettingState extends State<Setting> {
                 }),
           ),
       ],
+    );
+  }
+
+  buildColorCodeQuizSwitch() {
+    return Container(
+      decoration: borderLine,
+      child: SizedBox(
+        child: SwitchListTile(
+          value: appSetting.colorCodeQuiz,
+          title: AutoSizeText(
+            'ランダムカラーの色名のカラーコード化',
+            style: TextStyle(fontWeight: FontWeight.w500),
+            minFontSize: 15,
+          ),
+          onChanged: (bool value) {
+            setState(() {
+              appSetting.colorCodeQuiz = value;
+            });
+            deleteSettingData();
+            saveSettingData(appSetting);
+          },
+        ),
+      ),
     );
   }
 }
