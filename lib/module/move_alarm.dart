@@ -35,10 +35,11 @@ setBackgroundTimer(tz.TZDateTime time) {
 
 //アラームに曜日のくり返しが無い場合は直近のその時間に鳴らす（当日か翌日に鳴る）
 setAlarmOnceSchedule(Alarm alarm) async {
+  tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   print('----------------バックグラウンド処理登録開始--------------');
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
       tag: 'alarm',
-      initialDelay: setBackgroundTimer(_nextInstanceTime(alarm)),
+      initialDelay: setBackgroundTimer(scheduledDate),
       inputData: {
         'int': alarm.alarmId,
         'vibration': alarm.vibration,
@@ -50,7 +51,6 @@ setAlarmOnceSchedule(Alarm alarm) async {
   print('----------------バックグラウンド処理登録完了--------------');
 
   print('----------------通知登録開始--------------');
-  tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
       '${alarm.description}',
@@ -74,7 +74,6 @@ setAlarmOnceSchedule(Alarm alarm) async {
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
       payload: '$scheduledDate');
 
   print('----------------通知登録完了--------------');
@@ -85,11 +84,12 @@ setAlarmOnceSchedule(Alarm alarm) async {
 setAlarmWeeklySchedule(Alarm alarm) async {
   print('曜日アラーム登録開始');
 
+  tz.TZDateTime scheduledRepeatDate = _nextInstanceWeek(alarm);
   print('----------------バックグラウンド処理登録開始--------------');
-  tz.TZDateTime scheduledDate = _nextInstanceWeek(alarm);
+
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'alarm',
       tag: 'alarm',
-      initialDelay: setBackgroundTimer(_nextInstanceWeek(alarm)),
+      initialDelay: setBackgroundTimer(scheduledRepeatDate),
       inputData: {
         'int': alarm.alarmId,
         'vibration': alarm.vibration,
@@ -99,13 +99,12 @@ setAlarmWeeklySchedule(Alarm alarm) async {
       });
 
   print('----------------バックグラウンド処理登録完了--------------');
-
   print('----------------通知登録開始--------------');
   await flutterLocalNotificationsPlugin.zonedSchedule(
       alarm.alarmId,
       '${alarm.description}',
       'アラームの時間になりました！',
-      _nextInstanceWeek(alarm),
+      scheduledRepeatDate,
       NotificationDetails(
           android: AndroidNotificationDetails(
             'Alarm',
@@ -124,11 +123,10 @@ setAlarmWeeklySchedule(Alarm alarm) async {
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-      payload: '$scheduledDate');
+      payload: '$scheduledRepeatDate');
 
   print('----------------通知登録完了--------------');
-  setSettingAlarmId(alarm, _nextInstanceWeek(alarm));
+  setSettingAlarmId(alarm, scheduledRepeatDate);
   print('曜日アラーム登録完了');
 }
 
@@ -140,7 +138,7 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
   tz.TZDateTime scheduledDate = _nextInstanceTime(alarm);
   Workmanager.registerOneOffTask(alarm.alarmId.toString(), 'snooze',
       tag: 'snooze',
-      initialDelay: setBackgroundTimer(_nextInstanceTime(alarm)),
+      initialDelay: setBackgroundTimer(scheduledDate),
       inputData: {
         'int': alarm.alarmId - 1,
         'vibration': alarm.vibration,
@@ -174,11 +172,10 @@ setAlarm10minSnoozeSchedule(Alarm alarm) async {
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
       payload: '$scheduledDate');
 
   print('----------------通知登録完了--------------');
-  setSettingAlarmId(alarm, _nextInstanceTime(alarm));
+  setSettingAlarmId(alarm, scheduledDate);
 }
 
 //現在が、目的の時間より前か
