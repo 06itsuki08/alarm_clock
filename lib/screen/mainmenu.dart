@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:alarm_clock/module/alarm.dart';
 import 'package:alarm_clock/module/alarm_list.dart';
+import 'package:alarm_clock/module/url_launcher.dart';
 import 'package:alarm_clock/screen/alarmsetting.dart';
 import 'package:alarm_clock/screen/alarmstop.dart';
 import 'package:alarm_clock/val/color.dart';
@@ -12,6 +13,7 @@ import 'package:alarm_clock/val/string.dart';
 import 'package:alarm_clock/module/shared_prefs.dart';
 import 'package:alarm_clock/module/move_alarm.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class MainMenu extends StatefulWidget {
@@ -79,8 +81,12 @@ class _MainMenuState extends State<MainMenu> {
                 case 0:
                   Navigator.pushNamed(context, '/setting');
                   break;
-                //ヘルプボタン
                 case 1:
+                  launchURL(
+                      'https://sites.google.com/gn.iwasaki.ac.jp/nekonokai/%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89?authuser=0');
+                  break;
+                //ヘルプボタン
+                case 2:
                   Navigator.pushNamed(context, '/help');
                   break;
               }
@@ -95,6 +101,10 @@ class _MainMenuState extends State<MainMenu> {
               ),
               PopupMenuItem(
                 value: 1,
+                child: Text('QRコードの入手', style: TextStyle(fontSize: 20)),
+              ),
+              PopupMenuItem(
+                value: 2,
                 child: Text('ヘルプ', style: TextStyle(fontSize: 20)),
               ),
             ],
