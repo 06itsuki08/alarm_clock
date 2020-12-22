@@ -254,6 +254,7 @@ class HelpHome extends StatelessWidget {
                       ),
                       AutoSizeText('猫の会', style: TextStyle(fontSize: 18)),
                       AutoSizeText('岩尾 実柚紀 志和 樹 櫻井 千晶',
+                          //AutoSizeText('猫さん Novia 焼鳥のノナ',
                           style: TextStyle(
                             fontSize: 16,
                           )),
