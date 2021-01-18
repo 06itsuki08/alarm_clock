@@ -15,6 +15,7 @@
 - workmanager -> バックグラウンド処理を行わせる
 - barcode_scan -> QR コードをスキャンさせる
 - auto_size_text -> 端末ごとに文字サイズを調整させる
+- url_launcher -> ブラウザでリンクを開かせる。ＱＲコードの入手先に飛ばす用
 
 ## Tools
 
