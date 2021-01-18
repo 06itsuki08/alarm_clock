@@ -292,8 +292,16 @@ class _AlarmSettingState extends State<AlarmSetting> {
   }
 
   Future<void> selectTime(BuildContext context) async {
-    final TimeOfDay t =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final TimeOfDay t = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child,
+        );
+      },
+    );
 
     if (t != null) {
       setState(() {
